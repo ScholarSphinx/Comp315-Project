@@ -70,6 +70,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)External\SFML\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -131,10 +134,37 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="main.h" />
+    <ClInclude Include="GUI\Button.h" />
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="GUI\Application.h" />
+    <ClInclude Include="Core\DiscountedProduct.h" />
+    <ClInclude Include="Core\Inventory.h" />
+    <ClInclude Include="Core\Product.h" />
+    <ClInclude Include="Core\TaxableProduct.h" />
+    <ClInclude Include="Core\Order.h" />
+    <ClInclude Include="GUI\TextBox.h" />
+    <ClInclude Include="IO\CSVLoader.h" />
+    <ClInclude Include="IO\Logger.h" />
+    <ClInclude Include="Concurrency\OrderProcessor.h" />
+    <ClInclude Include="GUI\PieChart.h" />
+    <ClInclude Include="Utils\RandomGenerator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GUI\Button.cpp" />
+    <ClCompile Include="Config.cpp" />
+    <ClCompile Include="GUI\Application.cpp" />
+    <ClCompile Include="Core\DiscountedProduct.cpp" />
+    <ClCompile Include="Core\Inventory.cpp" />
+    <ClCompile Include="GUI\TextBox.cpp" />
+    <ClCompile Include="IO\CSVLoader.cpp" />
+    <ClCompile Include="IO\Logger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Core\Product.cpp" />
+    <ClCompile Include="Core\TaxableProduct.cpp" />
+    <ClCompile Include="Core\Order.cpp" />
+    <ClCompile Include="Concurrency\OrderProcessor.cpp" />
+    <ClCompile Include="GUI\PieChart.cpp" />
+    <ClCompile Include="Utils\RandomGenerator.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
