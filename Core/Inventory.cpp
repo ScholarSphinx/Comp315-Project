@@ -2,39 +2,41 @@
 
 void Inventory::addProduct(std::shared_ptr<Product> product)
 {
-    if (!product) return;
+    if (!product)
+        return;
 
-    std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_inventoryMutex);
     m_products[product->getId()] = product;
 }
 
-std::map<int, std::shared_ptr<Product>> Inventory::getProducts() const
+const std::unordered_map<int, std::shared_ptr<Product>>&
+Inventory::getProducts() const
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
     return m_products;
 }
 
-bool Inventory::processOrder(Order& order)
+OrderStatus Inventory::processOrder(int productId,
+    int quantity,
+    double& revenueOut)
 {
-    if (order.quantity <= 0)
-    {
-        order.status = OrderStatus::FAILED;
-        return false;
-    }
+    std::lock_guard<std::mutex> lock(m_inventoryMutex);
 
-    std::lock_guard<std::mutex> lock(m_mutex);
+    if (quantity <= 0)
+        return OrderStatus::InvalidQuantity;
 
-    auto it = m_products.find(order.productId);
+    auto it = m_products.find(productId);
     if (it == m_products.end())
-    {
-        order.status = OrderStatus::FAILED;
-        return false;
-    }
+        return OrderStatus::ProductNotFound;
 
-    bool success = it->second->reduceStock(order.quantity);
+    auto& product = it->second;
 
-    order.status = success ? OrderStatus::SUCCESS
-        : OrderStatus::FAILED;
+    if (product->getQuantity() < quantity)
+        return OrderStatus::InsufficientStock;
 
-    return success;
+    product->reduceStock(quantity);
+
+    revenueOut =
+        product->calculateFinalPrice() * quantity;
+
+    return OrderStatus::Success;
 }

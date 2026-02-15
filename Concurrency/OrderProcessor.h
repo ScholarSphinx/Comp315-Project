@@ -1,9 +1,13 @@
 #pragma once
+
+#include "../Core/Inventory.h"
+#include "../Core/Order.h"
+#include "../IO/Logger.h"
+
 #include <vector>
 #include <thread>
 #include <atomic>
-#include "../Core/Inventory.h"
-#include "../IO/Logger.h"
+#include <random>
 
 struct Metrics
 {
@@ -14,16 +18,14 @@ struct Metrics
 
 class OrderProcessor
 {
-public:
-    OrderProcessor(Inventory& inventory);
-
-    void simulate(int threads, int totalOrders);
-    Metrics& getMetrics();
-
 private:
-    void worker(int ordersPerThread);
-
     Inventory& m_inventory;
     Metrics m_metrics;
-    std::atomic<int> m_orderId{ 0 };
+
+public:
+    explicit OrderProcessor(Inventory& inventory);
+
+    void simulate(int threadCount, int totalOrders);
+
+    const Metrics& getMetrics() const;
 };

@@ -57,6 +57,9 @@
     <ClInclude Include="GUI\TextBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Repository.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -102,6 +105,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GUI\TextBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Repository.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

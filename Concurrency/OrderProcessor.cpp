@@ -1,47 +1,146 @@
 #include "OrderProcessor.h"
-#include "../Utils/RandomGenerator.h"
 
 OrderProcessor::OrderProcessor(Inventory& inventory)
-    : m_inventory(inventory) {
+    : m_inventory(inventory)
+{
 }
 
-Metrics& OrderProcessor::getMetrics()
-{
-    return m_metrics;
-}
+//void OrderProcessor::simulate(int threadCount, int totalOrders)
+//{
+//    m_metrics.total = 0;
+//    m_metrics.success = 0;
+//    m_metrics.failed = 0;
+//
+//    const auto& productMap = m_inventory.getProducts();
+//
+//    if (productMap.empty())
+//        return;
+//
+//    // Convert map to vector for random access
+//    std::vector<std::shared_ptr<Product>> products;
+//    products.reserve(productMap.size());
+//
+//    for (const auto& [id, product] : productMap)
+//        products.push_back(product);
+//
+//    std::vector<std::thread> threads;
+//    threads.reserve(threadCount);
+//
+//    int ordersPerThread = totalOrders / threadCount;
+//
+//    for (int t = 0; t < threadCount; ++t)
+//    {
+//        threads.emplace_back([this, ordersPerThread, products]()
+//            {
+//                std::random_device rd;
+//                std::mt19937 gen(rd());
+//
+//                std::uniform_int_distribution<> productDist(0, products.size() - 1);
+//                std::uniform_int_distribution<> qtyDist(1, 3);
+//
+//                for (int i = 0; i < ordersPerThread; ++i)
+//                {
+//                    m_metrics.total++;
+//
+//                    auto product = products[productDist(gen)];
+//
+//                    double revenue = 0.0;
+//
+//                    OrderStatus status =
+//                        m_inventory.processOrder(
+//                            product->getId(),
+//                            qtyDist(gen),
+//                            revenue
+//                        );
+//
+//                    if (status == OrderStatus::Success)
+//                    {
+//                        m_metrics.success++;
+//                        Logger::log("Order SUCCESS: " + product->getName());
+//                    }
+//                    else
+//                    {
+//                        m_metrics.failed++;
+//                        Logger::log("Order FAILED");
+//                    }
+//                }
+//            });
+//    }
+//
+//    for (auto& th : threads)
+//    {
+//        if (th.joinable())
+//            th.join();
+//    }
+//}
 
-void OrderProcessor::simulate(int threads, int totalOrders)
+void OrderProcessor::simulate(int threadCount, int totalOrders)
 {
-    if (threads <= 0 || totalOrders <= 0)
+    const auto& productMap = m_inventory.getProducts();
+
+    if (productMap.empty())
         return;
 
-    std::vector<std::thread> pool;
-    int perThread = totalOrders / threads;
+    // Convert map to vector snapshot
+    std::vector<std::shared_ptr<Product>> products;
+    products.reserve(productMap.size());
 
-    for (int i = 0; i < threads; ++i)
-        pool.emplace_back(&OrderProcessor::worker,
-            this, perThread);
+    for (const auto& [id, product] : productMap)
+        products.push_back(product);
 
-    for (auto& t : pool)
-        if (t.joinable()) t.join();
+    std::vector<std::thread> threads;
+    threads.reserve(threadCount);
+
+    int ordersPerThread = totalOrders / threadCount;
+
+    for (int t = 0; t < threadCount; ++t)
+    {
+        threads.emplace_back([this, ordersPerThread, products]()
+            {
+                std::random_device rd;
+                std::mt19937 gen(rd());
+
+                std::uniform_int_distribution<> productDist(0, products.size() - 1);
+                std::uniform_int_distribution<> qtyDist(1, 3);
+
+                for (int i = 0; i < ordersPerThread; ++i)
+                {
+                    m_metrics.total.fetch_add(1);
+
+                    auto product = products[productDist(gen)];
+
+                    double revenue = 0.0;
+
+                    OrderStatus status =
+                        m_inventory.processOrder(
+                            product->getId(),
+                            qtyDist(gen),
+                            revenue
+                        );
+
+                    if (status == OrderStatus::Success)
+                    {
+                        m_metrics.success.fetch_add(1);
+                        Logger::log("Order SUCCESS: " + product->getName());
+                    }
+                    else
+                    {
+                        m_metrics.failed.fetch_add(1);
+                        Logger::log("Order FAILED");
+                    }
+                }
+            });
+    }
+
+    for (auto& th : threads)
+    {
+        if (th.joinable())
+            th.join();
+    }
 }
 
-void OrderProcessor::worker(int ordersPerThread)
+
+const Metrics& OrderProcessor::getMetrics() const
 {
-    for (int i = 0; i < ordersPerThread; ++i)
-    {
-        int id = ++m_orderId;
-        int productId = RandomGenerator::getInt(1, 15);
-        int qty = RandomGenerator::getInt(1, 5);
-
-        Order order(id, productId, qty);
-
-        bool success = m_inventory.processOrder(order);
-
-        m_metrics.total++;
-        success ? m_metrics.success++ : m_metrics.failed++;
-
-        Logger::log("Order " + std::to_string(id) +
-            (success ? " SUCCESS" : " FAILED"));
-    }
+    return m_metrics;
 }

@@ -1,23 +1,31 @@
 #pragma once
+#include <memory>
+#include <string>
+#include "Product.h"
 
 enum class OrderStatus
 {
-    SUCCESS,
-    FAILED
+    Success,
+    InsufficientStock,
+    ProductNotFound,
+    InvalidQuantity
 };
 
 class Order
 {
-public:
-    Order(int id, int productId, int quantity)
-        : orderId(id),
-        productId(productId),
-        quantity(quantity),
-        status(OrderStatus::FAILED) {
-    }
-
+private:
     int orderId;
-    int productId;
+    std::shared_ptr<Product> product;
     int quantity;
-    OrderStatus status;
+
+public:
+    Order(int id,
+        std::shared_ptr<Product> product,
+        int quantity);
+
+    int getOrderId() const;
+    int getProductId() const;
+    std::string getProductName() const;
+    int getQuantity() const;
+    std::shared_ptr<Product> getProduct() const;
 };
