@@ -25,7 +25,7 @@ private:
 public:
     explicit OrderProcessor(Inventory& inventory);
 
-    void simulate(int threadCount, int totalOrders);
+    void simulate();
 
     const Metrics& getMetrics() const;
 };

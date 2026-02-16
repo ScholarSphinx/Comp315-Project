@@ -13,7 +13,7 @@ Application::Application()
     m_window.setFramerateLimit(60);
 
     sf::Image icon;
-    if (icon.loadFromFile("Assets/icon.png"))
+    if (icon.loadFromFile("Assets/icon.jpeg"))
         m_window.setIcon(icon);
 
     if (!m_font.openFromFile("Assets/font.ttf"))
@@ -28,7 +28,7 @@ Application::Application()
     m_simulateBtn = Button(m_font, "Run Simulation", { 200,40 }, { 40,30 });
     m_simulateBtn.setCallback([this] {
         std::thread([this] {
-            m_processor->simulate(THREAD_COUNT, TOTAL_ORDERS);
+            m_processor->simulate();
             }).detach();
         });
 }
