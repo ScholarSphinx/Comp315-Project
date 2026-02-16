@@ -100,6 +100,25 @@ void Application::render()
         card.setOutlineColor({ 70,70,80 });
         m_window.draw(card);
 
+
+        sf::RectangleShape stockIndicator({ 30,70 });
+        stockIndicator.setPosition({ x+190 + col * 240.f, y });
+        stockIndicator.setFillColor({ 36,38,45 });
+        stockIndicator.setOutlineThickness(2);
+        stockIndicator.setOutlineColor({ 70,70,80 });
+        
+		int stockcount = p->getQuantity();
+
+        if (stockcount == 0)
+            stockIndicator.setFillColor({ 200,50,50 });
+        else if (stockcount <= 10)
+            stockIndicator.setFillColor({ 200,150,50 });
+        else if (stockcount <= 20)
+			stockIndicator.setFillColor({ 200,200,50 });
+        else
+            stockIndicator.setFillColor({ 50,200,50 });
+        m_window.draw(stockIndicator);
+
         sf::Text t(m_font,
             p->getName() + "\nStock: " + std::to_string(p->getQuantity()), 16);
         t.setPosition({ x + 10 + col * 240.f, y + 10 });
