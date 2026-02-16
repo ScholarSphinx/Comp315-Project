@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-class Product
+class Product //think of other children
 {
 public:
     Product(int id,
