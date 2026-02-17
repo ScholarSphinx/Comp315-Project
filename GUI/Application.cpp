@@ -128,7 +128,7 @@ void Application::render()
         if (col == 3) { col = 0; y += 90; }
     }
 
-    sf::RectangleShape statBack({ 300,450 });
+    sf::RectangleShape statBack({ 300,430 });
     statBack.setPosition({ 800, 120 });
     statBack.setFillColor({ 36,30,43 });
     statBack.setOutlineThickness(2);
@@ -143,7 +143,7 @@ void Application::render()
 
     for (int i = 0; i < 4; i++) {
         sf::RectangleShape statCard({ 130,45 });
-        if (i == 0) {
+        if (i == 0) { // orders
             statCard.setFillColor({ 60,60,60 });
         }
         else if (i == 1) { // success
@@ -194,10 +194,10 @@ void Application::render()
     float total = (float)metrics.total.load();
     float ratio = total > 0 ? metrics.success.load() / total : 0.f;
 
-    m_chart.draw(m_window, { 950,400 }, 120.f, ratio);
+    m_chart.draw(m_window, { 950,375 }, 120.f, ratio);
 
     sf::Text chartLabel(m_font, "Success vs Failed", 18);
-    chartLabel.setPosition({ 880,520 });
+    chartLabel.setPosition({ 880,505 });
     m_window.draw(chartLabel);
 
     m_window.display();
