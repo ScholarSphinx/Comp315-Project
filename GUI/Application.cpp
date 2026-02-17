@@ -143,6 +143,7 @@ void Application::render()
 
     for (int i = 0; i < 4; i++) {
         sf::RectangleShape statCard({ 130,45 });
+
         if (i == 0) { // orders
             statCard.setFillColor({ 60,60,60 });
         }
