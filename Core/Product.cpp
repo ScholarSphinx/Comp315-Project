@@ -8,7 +8,7 @@ Product::Product(int id,
       m_name(name),
       m_price(price < 0 ? 0 : price),
       m_quantity(quantity < 0 ? 0 : quantity)
-{
+{//Constructor for the Product class, validating the input parameters and initializing the member variables
 }
 
 int Product::getId() const
@@ -32,7 +32,7 @@ int Product::getQuantity() const
 }
 
 bool Product::reduceStock(int amount)
-{
+{// Validate the input amount
     if (amount <= 0)
         return false;
 

@@ -1,8 +1,8 @@
 #pragma once
 
 // --- Core Simulation Settings ---
-constexpr int THREAD_COUNT = 5;
-constexpr int TOTAL_ORDERS = 50;
+constexpr int THREAD_COUNT = 5; //Number of threads to simulate concurrent order processing, allowing for testing the performance and behavior of the order processing system under conditions where multiple orders are being processed simultaneously, ensuring that the system can handle concurrent operations effectively
+constexpr int TOTAL_ORDERS = 50; //Total number of orders to simulate, defining the workload for the order processing simulation, allowing for testing the system's performance and behavior under a defined number of orders, ensuring that we can evaluate the efficiency and success rate of the order processing logic with a realistic workload
 
 // --- Behaviour Settings ---
 constexpr bool CUMULATIVE_ORDERS = true; //set to false for each simulation to reset metrics
@@ -16,3 +16,4 @@ constexpr int MAX_CONCURRENT_THREADS = 8;
 
 //LOW_STOCK_WARNING_THRESHOLD = 5 ???
 //ENABLE_REVENUE_TRACKING = true ???
+//Threadpool vs thread per order

@@ -14,15 +14,15 @@ enum class OrderStatus
 class Order
 {
 private:
-    int orderId;
-    std::shared_ptr<Product> product;
-    int quantity;
+	int orderId;    //Unique Order ID
+	std::shared_ptr<Product> product;  //Product being ordered
+	int quantity;  //Quantity of the product being ordered
 
 public:
     Order(int id,
         std::shared_ptr<Product> product,
         int quantity);
-
+    //Getters
     int getOrderId() const;
     int getProductId() const;
     std::string getProductName() const;
