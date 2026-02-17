@@ -8,7 +8,7 @@
 #include <cmath>
 
 Application::Application()
-    : m_window(sf::VideoMode({ 1400u,800u }), "Inventory System")
+    : m_window(sf::VideoMode({ 1150u,600u }), "Inventory System")
 {
     m_window.setFramerateLimit(60);
 
@@ -96,15 +96,15 @@ void Application::render()
         sf::RectangleShape card({ 220,70 });
         card.setPosition({ x + col * 240.f, y });
         card.setFillColor({ 36,38,45 });
-        card.setOutlineThickness(1);
+        card.setOutlineThickness(2);
         card.setOutlineColor({ 70,70,80 });
         m_window.draw(card);
 
 
-        sf::RectangleShape stockIndicator({ 30,70 });
-        stockIndicator.setPosition({ x+190 + col * 240.f, y });
+        sf::RectangleShape stockIndicator({ 15,64 });
+        stockIndicator.setPosition({ x+203 + col * 240.f, y+3 });
         stockIndicator.setFillColor({ 36,38,45 });
-        stockIndicator.setOutlineThickness(2);
+        stockIndicator.setOutlineThickness(1);
         stockIndicator.setOutlineColor({ 70,70,80 });
         
 		int stockcount = p->getQuantity();
@@ -125,28 +125,79 @@ void Application::render()
         m_window.draw(t);
 
         col++;
-        if (col == 4) { col = 0; y += 90; }
+        if (col == 3) { col = 0; y += 90; }
     }
+
+    sf::RectangleShape statBack({ 300,450 });
+    statBack.setPosition({ 800, 120 });
+    statBack.setFillColor({ 36,30,43 });
+    statBack.setOutlineThickness(2);
+    statBack.setOutlineColor({ 70,70,80 });
+    m_window.draw(statBack);
 
     auto& metrics = m_processor->getMetrics();
 
-    sf::Text stats(m_font,
-        "Orders: " + std::to_string(metrics.total.load()) +
-        "\nSuccess: " + std::to_string(metrics.success.load()) +
-        "\nFailed: " + std::to_string(metrics.failed.load()) +
-        "\nThreads: " + std::to_string(THREAD_COUNT),
-        18);
+    float xStat = 807;
+    float yStat = 120;
+    int colStat = 0;
 
-    stats.setPosition({ 1000,120 });
-    m_window.draw(stats);
+    for (int i = 0; i < 4; i++) {
+        sf::RectangleShape statCard({ 130,45 });
+        if (i == 0) {
+            statCard.setFillColor({ 60,60,60 });
+        }
+        else if (i == 1) { // success
+            xStat += 156;
+            statCard.setFillColor({ 10,120,10 });
+        }
+        else if (i == 2) { // thread
+            yStat += 55;
+            statCard.setFillColor({ 120,10,15 });
+        }
+        else if (i == 3) { // failed
+            xStat -=156;
+            statCard.setFillColor({ 10,10,15 });
+        };
+        statCard.setPosition({ xStat, yStat });
+        statCard.setOutlineThickness(1);
+        statCard.setOutlineColor({ 70,70,80 });
+
+        m_window.draw(statCard);
+    }
+
+    sf::Text orderstat1(m_font,
+        "Orders: " + std::to_string(metrics.total.load()),18);
+
+    sf::Text successstat2(m_font,
+        "\nSuccess: " + std::to_string(metrics.success.load()) ,18);
+
+    sf::Text failedstat3(m_font,
+        "\nFailed: " + std::to_string(metrics.failed.load()),18);
+
+    sf::Text threadstat4(m_font,
+        "\nThreads: " + std::to_string(THREAD_COUNT),18);
+
+
+    orderstat1.setPosition({ 825,130 });   
+    m_window.draw(orderstat1);
+
+    successstat2.setPosition({ 975,110 });    
+    m_window.draw(successstat2);
+
+    failedstat3.setPosition({ 975,165 });   
+    m_window.draw(failedstat3);
+
+    threadstat4.setPosition({ 825,165 });   
+    m_window.draw(threadstat4);
+
 
     float total = (float)metrics.total.load();
     float ratio = total > 0 ? metrics.success.load() / total : 0.f;
 
-    m_chart.draw(m_window, { 1100,400 }, 120.f, ratio);
+    m_chart.draw(m_window, { 950,400 }, 120.f, ratio);
 
     sf::Text chartLabel(m_font, "Success vs Failed", 18);
-    chartLabel.setPosition({ 1030,520 });
+    chartLabel.setPosition({ 880,520 });
     m_window.draw(chartLabel);
 
     m_window.display();
