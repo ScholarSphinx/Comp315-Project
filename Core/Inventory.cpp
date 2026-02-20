@@ -40,3 +40,18 @@ OrderStatus Inventory::processOrder(int productId, //Processing an order for a p
 
 	return OrderStatus::Success; //Returning a success status indicating that the order was processed successfully, allowing the caller to know that the order was fulfilled and the inventory was updated accordingly, ensuring that the order processing logic provides clear feedback on the outcome of the order processing
 }
+
+void Inventory::removeProduct(int productId)
+{
+    std::lock_guard<std::mutex> lock(m_inventoryMutex);
+    m_products.erase(productId);
+}
+
+void Inventory::increaseStock(int productId, int amount)
+{
+    std::lock_guard<std::mutex> lock(m_inventoryMutex);
+
+    auto it = m_products.find(productId);
+    if (it != m_products.end())
+        it->second->increaseStock(amount);
+}

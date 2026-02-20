@@ -13,7 +13,8 @@ constexpr int MAX_ORDER_QUANTITY = 5;
 
 // --- Concurrency Limiter ---
 constexpr int MAX_CONCURRENT_THREADS = 8;
+constexpr bool THREAD_POOL_MODE = true;
 
-//LOW_STOCK_WARNING_THRESHOLD = 5 ???
-//ENABLE_REVENUE_TRACKING = true ???
-//Threadpool vs thread per order
+
+// CSV Path
+constexpr const char* INVENTORY_FILE = "Assets/inventory.csv";

@@ -24,4 +24,7 @@ public:
 	OrderStatus processOrder(int productId, //Processing an order for a product by its ID, ensuring thread safety and proper stock management, returning the status of the order processing (success, insufficient stock, product not found, or invalid quantity)
         int quantity,
         double& revenueOut);
+
+	void removeProduct(int productId);
+	void increaseStock(int productId, int amount);
 };

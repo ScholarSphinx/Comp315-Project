@@ -15,7 +15,7 @@ public://Base class
     std::string getName() const;
     double getPrice() const;
     int getQuantity() const;
-
+	void increaseStock(int amount); //Increases the stock by the specified amount, ensuring that the stock quantity is updated correctly when new inventory is added or when correcting stock levels, allowing for proper inventory management and accurate tracking of available products
 	bool reduceStock(int amount); //Reduces the stock by the specified amount, returns true if successful, false if not enough stock or invalid amount
 
 	virtual double calculateFinalPrice() const = 0; //Virtual method used in children classes to calculate the final price of the product, can be overridden for different pricing strategies aka DIscount and Tax

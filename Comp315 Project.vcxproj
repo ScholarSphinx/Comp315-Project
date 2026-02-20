@@ -148,6 +148,8 @@
     <ClInclude Include="Concurrency\OrderProcessor.h" />
     <ClInclude Include="GUI\PieChart.h" />
     <ClInclude Include="Core\Repository.h" />
+    <ClInclude Include="Core\ThreadPool.h" />
+    <ClInclude Include="IO\ProductManager.h" />
     <ClInclude Include="Utils\RandomGenerator.h" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +168,8 @@
     <ClCompile Include="Concurrency\OrderProcessor.cpp" />
     <ClCompile Include="GUI\PieChart.cpp" />
     <ClCompile Include="Core\Repository.cpp" />
+    <ClCompile Include="Core\ThreadPool.cpp" />
+    <ClCompile Include="IO\ProductManager.cpp" />
     <ClCompile Include="Utils\RandomGenerator.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
