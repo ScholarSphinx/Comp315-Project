@@ -31,6 +31,8 @@ Application::Application()
 			m_processor->simulate(); //Running the order processing simulation in a separate thread, allowing the simulation to execute concurrently without blocking the main thread of the application, ensuring that the user interface remains responsive while the simulation is running and allowing users to interact with other elements of the interface during the simulation process
 			}).detach(); //Detaching the thread allows it to run independently without needing to join it back to the main thread, ensuring that we can start the simulation and let it run in the background while the main application continues to function and respond to user interactions without waiting for the simulation to complete.
         });
+
+	m_searchBox = TextBox(m_font, { 300, 30 }, { 40, 80 }); //Initializing the search text box with a specified font, size, and position, allowing users to enter text to search for products in the inventory, ensuring that we have an interactive element in the interface for users to input search queries and filter the displayed products accordingly
 }
 
 void Application::run()
@@ -49,13 +51,7 @@ void Application::processEvents()
 		if (e->is<sf::Event::Closed>()) //Checking if the event is a "Closed" event, which indicates that the user has requested to close the application window. If this event is detected, we call `m_window.close()` to close the application window and terminate the main loop, ensuring that the application exits gracefully when the user decides to close it.
             m_window.close();
 
-		else if (auto* t = e->getIf<sf::Event::TextEntered>()) //Checking if the event is a "TextEntered" event, which indicates that the user has entered text input. If this event is detected, we check the Unicode value of the entered character to determine if it is a backspace (Unicode 8) or a regular character (Unicode less than 128). If it is a backspace and the search string is not empty, we remove the last character from the search string. If it is a regular character, we append it to the search string. This allows users to input search queries in the search box and update the displayed products in real-time based on their input, providing an interactive search functionality in the application.
-        {
-			if (t->unicode == 8 && !m_search.empty())// Checking if the entered character is a backspace (Unicode 8) and if the search string is not empty, allowing users to delete characters from the search string when they press the backspace key, providing a way to correct or modify their search queries in the search box, ensuring that users can easily manage their search input and update the displayed products accordingly.
-                m_search.pop_back();
-			else if (t->unicode < 128) // Only allow ASCII characters for search input, ensuring that the search functionality remains simple and compatible with the product names in the inventory, which are likely to be in English and may not require support for extended Unicode characters. This also helps to prevent potential issues with character encoding and display in the search box, providing a more consistent user experience when entering search queries.
-                m_search += static_cast<char>(t->unicode);
-        }
+		m_searchBox.handleEvent(*e, m_window); //Handling events for the search text box, including mouse clicks for focus and text input, allowing users to enter text to search for products in the inventory. The TextBox handles focus, backspace, character input, and updates its internal value, providing an interactive search functionality in the application.
 
 		m_simulateBtn.handleEvent(*e, m_window); //Handling events for the "Run Simulation" button, allowing the button to respond to user interactions such as mouse clicks. This ensures that when users click the button, the associated callback function is executed to start the order processing simulation, providing an interactive element in the interface for users to engage with and trigger the simulation of order processing based on their input.
     }
@@ -77,8 +73,8 @@ void Application::render() //Rendering the user interface of the application, in
 
 	m_simulateBtn.draw(m_window); //Drawing the "Run Simulation" button on the window, allowing it to be visually represented in the application. This ensures that the button's shape and text are rendered correctly on the screen, enabling users to see and interact with the button in the application, providing a clear and interactive element for users to initiate the order processing simulation.
 
-	sf::Text searchLabel(m_font, "Search: Products" + m_search, 18); //Creating a text object for the search label, which displays the current search query entered by the user. This allows users to see their search input in real-time as they type, providing feedback on their search query and helping them to understand which products are being filtered based on their input. The search label is positioned near the top of the window to make it easily visible and accessible for users when they are entering their search queries.
-    searchLabel.setPosition({ 40,80 });
+	sf::Text searchLabel(m_font, "Search Products:", 18); //Creating a text object for the search label, which provides a visual indicator for the search functionality. This label is positioned above the search text box to make it easily visible and accessible for users when they are entering their search queries.
+    searchLabel.setPosition({ 40, 50 });
     m_window.draw(searchLabel);
 
 	m_searchBox.draw(m_window); //Drawing the search box on the window, allowing it to be visually represented in the application. This ensures that the search box's shape and any text within it are rendered correctly on the screen, enabling users to see and interact with the search box in the application, providing a clear and interactive element for users to enter their search queries and filter the displayed products accordingly.
@@ -86,6 +82,8 @@ void Application::render() //Rendering the user interface of the application, in
 	auto products = m_inventory.getProducts(); //Retrieving the products from the inventory, allowing us to access the product data for rendering in the user interface. This provides us with the necessary information about each product, such as its name and stock quantity, which we can use to create visual representations of the products in the application, enabling users to see the details of the products available in the inventory and their current stock levels.
     float x = 40, y = 120;
     int col = 0;
+
+	m_search = m_searchBox.getValue(); //Retrieving the current search query from the text box, allowing us to use it for filtering products in the inventory. This ensures that the search functionality is synchronized with the text box's value, providing a responsive and interactive search experience for users.
 
 	for (auto& [id, p] : products) //Iterating through the products in the inventory, allowing us to create visual representations of each product in the user interface. For each product, we check if it matches the current search query entered by the user, and if it does, we create a card to display the product's name and stock quantity. This loop ensures that only products that match the search criteria are displayed, providing a filtered view of the inventory based on user input, and allowing users to easily find and monitor specific products in the inventory.
     {
@@ -144,20 +142,19 @@ void Application::render() //Rendering the user interface of the application, in
     for (int i = 0; i < 4; i++) {
         sf::RectangleShape statCard({ 130,45 });
 
-        if (i == 0) { // orders
-            statCard.setFillColor({ 60,60,60 });
+        if (i == 0) { // Setting the fill color of the stat card to a neutral gray for the "Orders" metric, providing a distinct visual representation for this particular metric in the statistics section of the user interface. This color choice helps to differentiate the "Orders" metric from other metrics such as "Success," "Failed," and "Threads," allowing users to quickly identify and focus on the specific information related to the total number of orders processed, providing a clear and organized presentation of the order processing metrics in the application.
+			statCard.setFillColor({ 60,60,60 }); 
         }
-        else if (i == 1) { // success
+        else if (i == 1) { // Setting the fill color of the stat card to green for the "Success" metric, providing a distinct visual representation for this particular metric in the statistics section of the user interface. This color choice helps to differentiate the "Success" metric from other metrics such as "Orders," "Failed," and "Threads," allowing users to quickly identify and focus on the specific information related to the number of successful orders processed, providing a clear and organized presentation of the order processing metrics in the application, and conveying a positive performance indicator for successful order processing.
             xStat += 156;
-            statCard.setFillColor({ 10,120,10 });
-        }
-        else if (i == 2) { // thread
+			statCard.setFillColor({ 10,120,10 });         }
+        else if (i == 2) { // Setting the fill color of the stat card to a dark red for the "Threads" metric, providing a distinct visual representation for this particular metric in the statistics section of the user interface. This color choice helps to differentiate the "Threads" metric from other metrics such as "Orders," "Success," and "Failed," allowing users to quickly identify and focus on the specific information related to the number of threads used in the order processing simulation, providing a clear and organized presentation of the order processing metrics in the application, and conveying a sense of technical performance related to multithreading in the order processing system.
             yStat += 55;
-            statCard.setFillColor({ 120,10,15 });
+			statCard.setFillColor({ 120,10,15 }); 
         }
-        else if (i == 3) { // failed
+        else if (i == 3) {// Setting the fill color of the stat card to a very dark color for the "Failed" metric, providing a distinct visual representation for this particular metric in the statistics section of the user interface. This color choice helps to differentiate the "Failed" metric from other metrics such as "Orders," "Success," and "Threads," allowing users to quickly identify and focus on the specific information related to the number of failed orders processed, providing a clear and organized presentation of the order processing metrics in the application, and conveying a sense of caution or concern related to failed order processing, helping users to easily identify areas that may require attention or improvement in the order processing system.
             xStat -=156;
-            statCard.setFillColor({ 10,10,15 });
+			statCard.setFillColor({ 10,10,15 });         
         };
         statCard.setPosition({ xStat, yStat });
         statCard.setOutlineThickness(1);
@@ -168,29 +165,23 @@ void Application::render() //Rendering the user interface of the application, in
 
     sf::Text orderstat1(m_font,
 		"Orders: " + std::to_string(metrics.total.load()), 18); //Creating a text object to display the total number of orders processed, allowing us to provide users with information about the overall activity of the order processing system. This text will be rendered in the statistics section of the user interface, giving users a clear and concise representation of the total orders, enabling them to monitor the performance of the system and understand how many orders have been processed at a glance, providing valuable insights into the workload and efficiency of the order processing system.
+   orderstat1.setPosition({ 825,130 });   
+    m_window.draw(orderstat1);
 
     sf::Text successstat2(m_font,
 		"\nSuccess: " + std::to_string(metrics.success.load()), 18); //Creating a text object to display the number of successful orders processed, allowing us to provide users with information about the effectiveness of the order processing system. This text will be rendered in the statistics section of the user interface, giving users a clear and concise representation of the successful orders, enabling them to monitor the performance of the system and understand how many orders have been successfully processed at a glance, providing valuable insights into the success rate and efficiency of the order processing system.
+   successstat2.setPosition({ 975,110 });    
+    m_window.draw(successstat2);
 
     sf::Text failedstat3(m_font,
 		"\nFailed: " + std::to_string(metrics.failed.load()), 18); //Creating a text object to display the number of failed orders processed, allowing us to provide users with information about the challenges or issues faced by the order processing system. This text will be rendered in the statistics section of the user interface, giving users a clear and concise representation of the failed orders, enabling them to monitor the performance of the system and understand how many orders have encountered problems at a glance, providing valuable insights into potential areas for improvement in the order processing system.
-
-    sf::Text threadstat4(m_font,
-		"\nThreads: " + std::to_string(THREAD_COUNT), 18); //Creating a text object to display the number of threads used in the order processing simulation, allowing us to provide users with information about the level of concurrency and parallelism in the system. This text will be rendered in the statistics section of the user interface, giving users a clear and concise representation of the thread count, enabling them to understand how many threads are being utilized for processing orders at a glance, providing valuable insights into the performance and efficiency of the order processing system based on its use of multithreading.
-
-
-    orderstat1.setPosition({ 825,130 });   
-    m_window.draw(orderstat1);
-
-    successstat2.setPosition({ 975,110 });    
-    m_window.draw(successstat2);
-
     failedstat3.setPosition({ 975,165 });   
     m_window.draw(failedstat3);
 
+    sf::Text threadstat4(m_font,
+		"\nThreads: " + std::to_string(THREAD_COUNT), 18); //Creating a text object to display the number of threads used in the order processing simulation, allowing us to provide users with information about the level of concurrency and parallelism in the system. This text will be rendered in the statistics section of the user interface, giving users a clear and concise representation of the thread count, enabling them to understand how many threads are being utilized for processing orders at a glance, providing valuable insights into the performance and efficiency of the order processing system based on its use of multithreading.
     threadstat4.setPosition({ 825,165 });   
     m_window.draw(threadstat4);
-
 
     float total = (float)metrics.total.load();
 	float ratio = total > 0 ? metrics.success.load() / total : 0.f; //Calculating the success ratio of orders, allowing us to determine the proportion of successful orders relative to the total number of orders processed. This ratio is crucial for rendering the pie chart that visually represents the success and failure rates of the order processing system, providing users with an intuitive understanding of the system's performance at a glance, and helping them to assess the effectiveness of the order processing system based on the visual representation of the success ratio in the pie chart.
