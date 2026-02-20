@@ -42,3 +42,9 @@ bool Product::reduceStock(int amount)
     m_quantity -= amount;
     return true;
 }
+
+void Product::increaseStock(int amount)
+{
+    if (amount > 0)
+        m_quantity += amount;
+}
