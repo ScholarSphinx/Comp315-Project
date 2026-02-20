@@ -25,14 +25,14 @@ Application::Application()
 
 	m_processor = std::make_unique<OrderProcessor>(m_inventory); //Creating an instance of the OrderProcessor class, passing a reference to the inventory, allowing the order processor to access and interact with the inventory data for processing orders, ensuring that the order processing logic can manage stock levels and calculate revenues based on the products available in the inventory
 
-	m_simulateBtn = Button(m_font, "Run Simulation", { 200,40 }, { 40,30 }); //Initializing the "Run Simulation" button with a specified font, label, size, and position, allowing users to interact with the button to trigger the simulation of order processing, ensuring that we have a clear and interactive element in the interface for users to initiate the order processing simulation and view the resulting metrics
+	m_simulateBtn = Button(m_font, "Run Simulation", { 150,40 }, { 40,30 }); //Initializing the "Run Simulation" button with a specified font, label, size, and position, allowing users to interact with the button to trigger the simulation of order processing, ensuring that we have a clear and interactive element in the interface for users to initiate the order processing simulation and view the resulting metrics
 	m_simulateBtn.setCallback([this] { //Setting a callback function for the "Run Simulation" button, allowing users to define custom behavior that will be executed when the button is clicked. In this case, we start a new thread to run the order processing simulation, allowing the simulation to run concurrently without blocking the main thread of the application, ensuring that the user interface remains responsive while the simulation is running and allowing users to interact with other elements of the interface during the simulation process.
         std::thread([this] {
 			m_processor->simulate(); //Running the order processing simulation in a separate thread, allowing the simulation to execute concurrently without blocking the main thread of the application, ensuring that the user interface remains responsive while the simulation is running and allowing users to interact with other elements of the interface during the simulation process
 			}).detach(); //Detaching the thread allows it to run independently without needing to join it back to the main thread, ensuring that we can start the simulation and let it run in the background while the main application continues to function and respond to user interactions without waiting for the simulation to complete.
         });
 
-	m_searchBox = TextBox(m_font, { 300, 30 }, { 40, 80 }); //Initializing the search text box with a specified font, size, and position, allowing users to enter text to search for products in the inventory, ensuring that we have an interactive element in the interface for users to input search queries and filter the displayed products accordingly
+	m_searchBox = TextBox(m_font, { 300, 30 }, { 200, 80 }); //Initializing the search text box with a specified font, size, and position, allowing users to enter text to search for products in the inventory, ensuring that we have an interactive element in the interface for users to input search queries and filter the displayed products accordingly
 }
 
 void Application::run()
@@ -74,7 +74,7 @@ void Application::render() //Rendering the user interface of the application, in
 	m_simulateBtn.draw(m_window); //Drawing the "Run Simulation" button on the window, allowing it to be visually represented in the application. This ensures that the button's shape and text are rendered correctly on the screen, enabling users to see and interact with the button in the application, providing a clear and interactive element for users to initiate the order processing simulation.
 
 	sf::Text searchLabel(m_font, "Search Products:", 18); //Creating a text object for the search label, which provides a visual indicator for the search functionality. This label is positioned above the search text box to make it easily visible and accessible for users when they are entering their search queries.
-    searchLabel.setPosition({ 40, 50 });
+    searchLabel.setPosition({ 42, 82 });
     m_window.draw(searchLabel);
 
 	m_searchBox.draw(m_window); //Drawing the search box on the window, allowing it to be visually represented in the application. This ensures that the search box's shape and any text within it are rendered correctly on the screen, enabling users to see and interact with the search box in the application, providing a clear and interactive element for users to enter their search queries and filter the displayed products accordingly.

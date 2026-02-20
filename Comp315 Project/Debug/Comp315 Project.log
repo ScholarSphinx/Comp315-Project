@@ -1,19 +1,2 @@
-﻿  OrderProcessor.cpp
-  Config.cpp
-  DiscountedProduct.cpp
-  Inventory.cpp
-  Order.cpp
-  Product.cpp
-  Repository.cpp
-  TaxableProduct.cpp
-  Application.cpp
-  Button.cpp
-  PieChart.cpp
-  TextBox.cpp
-  CSVLoader.cpp
-  Logger.cpp
-  RandomGenerator.cpp
-  main.cpp
-  Generating Code...
-  LINK : C:\Users\Siddhar\Source\Repos\Comp315-Project\Debug\Comp315 Project.exe not found or not built by the last incremental link; performing full link
+﻿  Application.cpp
   Comp315 Project.vcxproj -> C:\Users\Siddhar\Source\Repos\Comp315-Project\Debug\Comp315 Project.exe
