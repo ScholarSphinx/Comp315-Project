@@ -43,15 +43,15 @@ OrderStatus Inventory::processOrder(int productId, //Processing an order for a p
 
 void Inventory::removeProduct(int productId)
 {
-    std::lock_guard<std::mutex> lock(m_inventoryMutex);
-    m_products.erase(productId);
+	std::lock_guard<std::mutex> lock(m_inventoryMutex); //Locking the inventory mutex to ensure thread safety while modifying the inventory, allowing for concurrent modifications to the inventory without risking data corruption
+	m_products.erase(productId); //Removing the product from the inventory using its unique ID as the key, ensuring that the product is properly removed and the inventory data is updated accordingly, allowing for effective management of products in the inventory and maintaining accurate records of available products
 }
 
 void Inventory::increaseStock(int productId, int amount)
 {
-    std::lock_guard<std::mutex> lock(m_inventoryMutex);
+	std::lock_guard<std::mutex> lock(m_inventoryMutex); //Locking the inventory mutex to ensure thread safety while modifying the inventory, allowing for concurrent modifications to the inventory without risking data corruption
 
-    auto it = m_products.find(productId);
+	auto it = m_products.find(productId); //Looking up the product in the inventory by its unique ID, allowing for efficient retrieval of product information based on the product ID, ensuring that we can quickly determine if the product exists in the inventory and access its details for stock management
     if (it != m_products.end())
-        it->second->increaseStock(amount);
+		it->second->increaseStock(amount); //Increasing the stock of the product by the specified amount, ensuring that the inventory levels are updated correctly when new inventory is added or when correcting stock levels, allowing for proper inventory management and accurate tracking of available products
 }

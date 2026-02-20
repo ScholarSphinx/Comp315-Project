@@ -1,9 +1,9 @@
-<<<<<<< HEAD
-﻿  Application.cpp
-  Comp315 Project.vcxproj -> C:\Users\Siddhar\Source\Repos\Comp315-Project\Debug\Comp315 Project.exe
-=======
-﻿  ProductManager.cpp
-  RandomGenerator.cpp
+﻿  OrderProcessor.cpp
+  Inventory.cpp
+  ThreadPool.cpp
+  Application.cpp
+  CSVLoader.cpp
+  ProductManager.cpp
+  main.cpp
   Generating Code...
   Comp315 Project.vcxproj -> C:\Users\calvi\source\repos\Yes\Comp315-Project\Debug\Comp315 Project.exe
->>>>>>> AddRemove

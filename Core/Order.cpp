@@ -37,17 +37,4 @@ std::shared_ptr<Product> Order::getProduct() const
 {
     return product;
 }
-void Inventory::removeProduct(int productId)
-{
-    std::lock_guard<std::mutex> lock(m_inventoryMutex);
-    m_products.erase(productId);
-}
 
-void Inventory::increaseStock(int productId, int amount)
-{
-    std::lock_guard<std::mutex> lock(m_inventoryMutex);
-
-    auto it = m_products.find(productId);
-    if (it != m_products.end())
-        it->second->increaseStock(amount);
-}

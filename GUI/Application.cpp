@@ -1,11 +1,16 @@
 #include "Application.h"
 #include "../IO/CSVLoader.h"
 #include "../Config.h"
+#include "../Core/DiscountedProduct.h"
+#include "../Core/TaxableProduct.h"
+#include "../IO/ProductManager.h"
 
 #include <SFML/Graphics.hpp>
 #include <optional>
 #include <thread>
 #include <cmath>
+#include <SFML/Window.hpp>
+#include <SFML/System.hpp>
 
 Application::Application()
 	: m_window(sf::VideoMode({ 1150u,600u }), "Inventory System") //Creating the main application window with a specified size and title, allowing us to display the user interface and interact with the inventory system, ensuring that we have a dedicated space for rendering the GUI components and providing a visually appealing interface for users to engage with the application
@@ -48,8 +53,109 @@ void Application::processEvents()
 {
 	while (std::optional<sf::Event> e = m_window.pollEvent()) //Polling for user input events such as mouse clicks and keyboard input, allowing the application to respond to user interactions with the GUI components. This loop ensures that users can interact with buttons, text boxes, and other elements of the interface to perform actions such as simulating orders and searching for products in the inventory, providing a responsive and interactive experience for users engaging with the application.
     {
-		if (e->is<sf::Event::Closed>()) //Checking if the event is a "Closed" event, which indicates that the user has requested to close the application window. If this event is detected, we call `m_window.close()` to close the application window and terminate the main loop, ensuring that the application exits gracefully when the user decides to close it.
+        if (e->is<sf::Event::Closed>()) //Checking if the event is a "Closed" event, which indicates that the user has requested to close the application window. If this event is detected, we call `m_window.close()` to close the application window and terminate the main loop, ensuring that the application exits gracefully when the user decides to close it.
+        {
             m_window.close();
+        }
+		else if (auto* text = e->getIf<sf::Event::TextEntered>()) //Checking if the event is a "TextEntered" event, which indicates that the user has entered text input. If this event is detected, we check if the search box is focused and then process the text input accordingly. This allows users to enter search queries in the search box to filter products in the inventory, providing an interactive way for users to find specific products based on their input.
+        {
+            if (text->unicode == 8) // Backspace
+            {
+                if (!m_search.empty())
+                    m_search.pop_back();
+            }
+            else if (text->unicode < 128)
+            {
+                m_search += static_cast<char>(text->unicode);
+            }
+        }
+
+
+        // Key Press Handling
+
+        else if (auto* key = e->getIf<sf::Event::KeyPressed>())
+        {
+
+            // A Key = Add Product
+
+            if (key->code == sf::Keyboard::Key::A)
+            {
+                static int nextId = 1000 + rand() % 9000;
+
+                // Alternate between product types
+                std::shared_ptr<Product> product;
+
+                if (nextId % 2 == 0)
+                {
+                    product = std::make_shared<DiscountedProduct>(
+                        nextId,
+                        "DiscountedItem",
+                        100.0,
+                        20,
+                        0.10   // 10% discount
+                    );
+                }
+                else
+                {
+                    product = std::make_shared<TaxableProduct>(
+                        nextId,
+                        "TaxableItem",
+                        100.0,
+                        20,
+                        0.15   // 15% tax
+                    );
+                }
+
+                m_inventory.addProduct(product);
+
+                ProductFileManager::addProductToFile(
+                    INVENTORY_FILE,
+                    product
+                );
+
+                nextId++;
+            }
+
+
+            // D Key = Remove Product
+
+            if (key->code == sf::Keyboard::Key::D)
+            {
+                const auto& products = m_inventory.getProducts();
+
+                if (!products.empty())
+                {
+                    int idToRemove =
+                        products.begin()->first;
+
+                    m_inventory.removeProduct(idToRemove);
+
+                    ProductFileManager::removeProductFromFile(
+                        INVENTORY_FILE,
+                        idToRemove
+                    );
+                }
+            }
+
+
+            // R Key = Restock Product
+
+            if (key->code == sf::Keyboard::Key::R)
+            {
+                const auto& products = m_inventory.getProducts();
+
+                if (!products.empty())
+                {
+                    int idToRestock =
+                        products.begin()->first;
+
+                    m_inventory.increaseStock(
+                        idToRestock,
+                        10   // restock amount
+                    );
+                }
+            }
+        }
 
 		m_searchBox.handleEvent(*e, m_window); //Handling events for the search text box, including mouse clicks for focus and text input, allowing users to enter text to search for products in the inventory. The TextBox handles focus, backspace, character input, and updates its internal value, providing an interactive search functionality in the application.
 
