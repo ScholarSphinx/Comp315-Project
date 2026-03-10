@@ -19,6 +19,8 @@ public:
 
 	const std::unordered_map<int, std::shared_ptr<Product>>&  //Providing read-only access to the products in the inventory, allowing users to retrieve information about the products without modifying the inventory data, ensuring that the integrity of the inventory is maintained while still allowing access to product details
         getProducts() const;
+    // Search product by name (case insensitive) or UID
+    std::shared_ptr<Product> searchProduct(const std::string& query);
 
     // ---- Concurrency-safe order processing ----
 	OrderStatus processOrder(int productId, //Processing an order for a product by its ID, ensuring thread safety and proper stock management, returning the status of the order processing (success, insufficient stock, product not found, or invalid quantity)
@@ -27,4 +29,5 @@ public:
 
 	void removeProduct(int productId); //Removing a product from the inventory by its unique ID, ensuring that the product is properly removed and the inventory data is updated accordingly, allowing for effective management of products in the inventory and maintaining accurate records of available products
 	void increaseStock(int productId, int amount); //Increasing the stock of a product by a specified amount, ensuring that the inventory levels are updated correctly when new inventory is added or when correcting stock levels, allowing for proper inventory management and accurate tracking of available products
+    
 };
