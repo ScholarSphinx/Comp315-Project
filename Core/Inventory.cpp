@@ -1,5 +1,6 @@
 #include "Inventory.h"
 #include <algorithm> 
+#include <string>
 
 void Inventory::addProduct(std::shared_ptr<Product> product) //Adding a new product to the inventory, using shared_ptr to manage the memory of the product and allow for polymorphism, ensuring that the product is properly stored and accessible in the inventory
 {
@@ -68,12 +69,14 @@ std::shared_ptr<Product> Inventory::searchProduct(const std::string& query)
 {
     std::lock_guard<std::mutex> lock(m_inventoryMutex);
 
+    std::string lowerQuery = toLower(query);
+
     for (auto& pair : m_products)
     {
         auto product = pair.second;
 
         // Case insensitive name search
-        if (toLower(product->getName()) == toLower(query))
+        if (toLower(product->getName()) == lowerQuery)
         {
             return product;
         }
