@@ -3,9 +3,11 @@
 #include <unordered_map>
 #include <memory>
 #include <mutex>
+#include <string>
 
 #include "Product.h"
 #include "Order.h"
+
 
 class Inventory
 {
