@@ -1,4 +1,5 @@
 #include "Inventory.h"
+#include <algorithm> 
 
 void Inventory::addProduct(std::shared_ptr<Product> product) //Adding a new product to the inventory, using shared_ptr to manage the memory of the product and allow for polymorphism, ensuring that the product is properly stored and accessible in the inventory
 {
@@ -54,4 +55,35 @@ void Inventory::increaseStock(int productId, int amount)
 	auto it = m_products.find(productId); //Looking up the product in the inventory by its unique ID, allowing for efficient retrieval of product information based on the product ID, ensuring that we can quickly determine if the product exists in the inventory and access its details for stock management
     if (it != m_products.end())
 		it->second->increaseStock(amount); //Increasing the stock of the product by the specified amount, ensuring that the inventory levels are updated correctly when new inventory is added or when correcting stock levels, allowing for proper inventory management and accurate tracking of available products
+}
+
+
+std::string toLower(std::string str)
+{
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+    return str;
+}
+
+std::shared_ptr<Product> Inventory::searchProduct(const std::string& query)
+{
+    std::lock_guard<std::mutex> lock(m_inventoryMutex);
+
+    for (auto& pair : m_products)
+    {
+        auto product = pair.second;
+
+        // Case insensitive name search
+        if (toLower(product->getName()) == toLower(query))
+        {
+            return product;
+        }
+
+        // Search using UID
+        if (std::to_string(product->getId()) == query)
+        {
+            return product;
+        }
+    }
+
+    return nullptr;
 }
