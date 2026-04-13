@@ -6,9 +6,8 @@
 class ProductFileManager
 {
 public:
-    static bool addProductToFile(const std::string& filename,
-		const std::shared_ptr<Product>& product); //Adding a product to the file by appending its details in CSV format, allowing us to persist product information in a file for later retrieval and management, ensuring that we can maintain a record of products in the inventory and easily add new products as needed by appending their details to the file, allowing for effective management of products in the inventory through file-based persistence.
-
+    static bool addProductToFile(const std::string& filename, const std::shared_ptr<Product>& product, const std::string& type, double rate); //Adding a product to the file by appending its details in CSV format, allowing us to persist product information in a file for later retrieval and management, ensuring that we can maintain a record of products in the inventory and easily add new products as needed by appending their details to the file, allowing for effective management of products in the inventory through file-based persistence.
+    static int calculateNextId(const std::string& filename);	//Calculating the next available product ID by counting the number of lines in the file, allowing us to generate unique IDs for new products based on the existing product data in the file, ensuring that we can maintain a consistent and sequential ID assignment for products in the inventory when adding new products through file-based persistence.
     static bool removeProductFromFile(const std::string& filename,
 		int productId); //Removing a product from the file by reading the existing product data, filtering out the line corresponding to the specified product ID, and writing the remaining product data back to the file, allowing us to manage the inventory by removing products as needed while maintaining the integrity of the remaining product data in the file, ensuring that we can maintain an accurate and up-to-date record of products in the inventory after removing a product.
 

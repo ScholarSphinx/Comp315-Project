@@ -77,43 +77,51 @@ void Application::processEvents()
         {
 
             // A Key = Add Product
-
             if (key->code == sf::Keyboard::Key::A)
             {
-                static int nextId = 1000 + rand() % 9000;
+                // 1. Get ID automatically from the file
+                int nextId = ProductFileManager::calculateNextId(INVENTORY_FILE);
 
-                // Alternate between product types
+                // 2. Get User Inputs (Mocked calls to your UI/Popup logic)
+                // You would replace these with your actual popup return values
+                /*std::string uType = promptUser("Enter Type (TAX or DISC): ");
+                std::string uName = promptUser("Enter Name: ");
+                double uPrice = promptDouble("Enter Price: ");
+                int uQty = promptInt("Enter Quantity: ");
+                double uRate = promptDouble("Enter Rate (e.g. 0.15): ");*/
+
+                std::string uType = "TAX";    // Taxable type
+                std::string uName = "USBs";    // Product Name
+                double uPrice = 25.0;         // $25.00 each
+                int uQty = 50;                // 50 units in stock
+                double uRate = 0.15;          // 15% Tax rate  
+
+                //For Sidd
+				//Remove the dummy data and create the actual popups to get user input for the new product details, including the type (TAX or DISC), name, price, quantity, and rate (tax or discount). This will allow users to add new products to the inventory with their specific details through an interactive interface, ensuring that the product information is accurately captured and added to the inventory system.
+
                 std::shared_ptr<Product> product;
 
-                if (nextId % 2 == 0)
+                // 3. Create the specific child class based on user input
+                if (uType == "DISC")
                 {
                     product = std::make_shared<DiscountedProduct>(
-                        nextId,
-                        "DiscountedItem",
-                        100.0,
-                        20,
-                        0.10   // 10% discount
+                        nextId, uName, uPrice, uQty, uRate
                     );
                 }
-                else
+                else // Default to Taxable
                 {
                     product = std::make_shared<TaxableProduct>(
-                        nextId,
-                        "TaxableItem",
-                        100.0,
-                        20,
-                        0.15   // 15% tax
+                        nextId, uName, uPrice, uQty, uRate
                     );
                 }
 
+                // 4. Add to Inventory (RAM)
                 m_inventory.addProduct(product);
 
-                ProductFileManager::addProductToFile(
-                    INVENTORY_FILE,
-                    product
-                );
+                // 5. Add to File (Disk) with the active status 1
+                ProductFileManager::addProductToFile(INVENTORY_FILE, product, uType, uRate);
 
-                nextId++;
+                //std::cout << "Product Added successfully with ID: " << nextId << std::endl;
             }
 
 

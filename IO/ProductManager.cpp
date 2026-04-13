@@ -3,18 +3,28 @@
 #include <sstream>
 #include <vector>
 
-bool ProductFileManager::addProductToFile( //Adding a product to the file by appending its details in CSV format, allowing us to persist product information in a file for later retrieval and management, ensuring that we can maintain a record of products in the inventory and easily add new products as needed.
-    const std::string& filename,
-    const std::shared_ptr<Product>& product)
-{
+int ProductFileManager::calculateNextId(const std::string& filename) {
+    std::ifstream file(filename);
+    int count = 0;
+    std::string line;
+    while (std::getline(file, line)) {
+        if (!line.empty()) count++;
+    }
+    return count + 1; // ID is line count + 1
+}
+
+bool ProductFileManager::addProductToFile(const std::string& filename, const std::shared_ptr<Product>& product, const std::string& type, double rate) {
     std::ofstream file(filename, std::ios::app);
-    if (!file)
-        return false;
-	// Writing the product details in CSV format (ID, Name, Price, Quantity) to the file, ensuring that the product information is stored in a structured and easily parsable format for later retrieval and management. This allows us to maintain a record of products in the inventory and easily add new products as needed by appending their details to the file.
-    file << product->getId() << "," 
+    if (!file) return false;
+
+    // Format: ID, Name, Price, Quantity, Type, Rate, Active(1)
+    file << product->getId() << ","
         << product->getName() << ","
         << product->getPrice() << ","
-        << product->getQuantity() << "\n";
+        << product->getQuantity() << ","
+        << type << ","
+        << rate << ","
+        << "1\n"; // New products are always active
 
     return true;
 }
