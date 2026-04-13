@@ -44,3 +44,36 @@ bool ProductFileManager::removeProductFromFile(
 
     return true;
 }
+
+// ProductFileManager.cpp
+void ProductFileManager::updateProductActiveStatus(const std::string& fileName, int targetId, int status) {
+    std::ifstream inFile(fileName);
+    std::vector<std::string> lines;
+    std::string line;
+
+    if (!inFile.is_open()) return;
+
+    while (std::getline(inFile, line)) {
+        std::stringstream ss(line);
+        std::vector<std::string> parts;
+        std::string part;
+
+        while (std::getline(ss, part, ',')) parts.push_back(part);
+
+        // If ID matches, update the 7th column (index 6) to the new status (0 or 1)
+        if (!parts.empty() && std::stoi(parts[0]) == targetId) {
+            if (parts.size() >= 7) parts[6] = std::to_string(status);
+            else parts.push_back(std::to_string(status));
+
+            line = "";
+            for (size_t i = 0; i < parts.size(); ++i) {
+                line += parts[i] + (i == parts.size() - 1 ? "" : ",");
+            }
+        }
+        lines.push_back(line);
+    }
+    inFile.close();
+
+    std::ofstream outFile(fileName, std::ios::trunc);
+    for (const auto& l : lines) outFile << l << "\n";
+}

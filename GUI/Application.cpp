@@ -118,23 +118,25 @@ void Application::processEvents()
 
 
             // D Key = Remove Product
-
             if (key->code == sf::Keyboard::Key::D)
             {
-                const auto& products = m_inventory.getProducts();
 
-                if (!products.empty())
-                {
-                    int idToRemove =
-                        products.begin()->first;
+                int mockIdToRemove = 3;
 
-                    m_inventory.removeProduct(idToRemove);
+                // This handles the internal bool AND the text file
+                m_inventory.deactivateProduct(mockIdToRemove);
+                //For Sid to sort the GUI for
+                //int idToRemove;
+                //std::cout << "Enter Product ID to deactivate: ";
 
-                    ProductFileManager::removeProductFromFile(
-                        INVENTORY_FILE,
-                        idToRemove
-                    );
-                }
+                //// Safety check for user input
+                //if (std::cin >> idToRemove) {
+                //   m_inventory.deactivateProduct(idToRemove);
+                //}
+
+                //// Clear cin buffer to prevent issues with other inputs
+                //std::cin.clear();
+                //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             }
 
 

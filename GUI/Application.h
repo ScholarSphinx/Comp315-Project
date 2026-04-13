@@ -5,9 +5,18 @@
 #include "../GUI/Button.h"
 #include "../GUI/PieChart.h"
 #include "../GUI/TextBox.h"
+#include <deque>
 
 class Application
 {
+
+struct OrderRecord
+{
+	std::string text;
+};
+
+	std::deque<OrderRecord> m_orderHistory;
+	std::mutex m_historyMutex;
 public:
 	Application(); //Constructor for the Application class, responsible for initializing the application, setting up the main window, loading resources such as fonts, and preparing the inventory and order processor for use in the application, ensuring that all necessary components are ready for the application to run smoothly and handle user interactions effectively
 	void run(); //Running the main loop of the application, which will continuously process events, update the application state, and render the user interface until the user decides to close the application, ensuring that the application remains responsive and functional while it is in use, allowing users to interact with the inventory, simulate order processing, and view metrics through the GUI components

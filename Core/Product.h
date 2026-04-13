@@ -7,10 +7,13 @@ public://Base class
 	Product(int id, //Unique Product ID
 		const std::string& name,    //Product name
 		double price, //Product price, must be non-negative
-		int quantity); //Initial stock quantity, must be non-negative
+		int quantity,
+        bool isActive = true); //Initial stock quantity, must be non-negative
 
     virtual ~Product() = default;
     //getters
+    bool isActive() const;
+    void setActive(bool status);
     int getId() const;
     std::string getName() const;
     double getPrice() const;
@@ -25,4 +28,5 @@ protected:
     std::string m_name;
     double m_price;
     int m_quantity;
+    bool m_isActive; // The "0 or 1" flag for the system
 };

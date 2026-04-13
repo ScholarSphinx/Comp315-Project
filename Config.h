@@ -13,7 +13,6 @@ constexpr int MAX_ORDER_QUANTITY = 5;
 
 // --- Concurrency Limiter ---
 constexpr int MAX_CONCURRENT_THREADS = 8;
-constexpr bool THREAD_POOL_MODE = true;
 
 
 // CSV Path

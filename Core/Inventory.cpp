@@ -1,4 +1,10 @@
+#include "../Config.h"
 #include "Inventory.h"
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <iostream>
+#include "../IO/ProductManager.h"
 
 void Inventory::addProduct(std::shared_ptr<Product> product) //Adding a new product to the inventory, using shared_ptr to manage the memory of the product and allow for polymorphism, ensuring that the product is properly stored and accessible in the inventory
 {
@@ -41,10 +47,19 @@ OrderStatus Inventory::processOrder(int productId, //Processing an order for a p
 	return OrderStatus::Success; //Returning a success status indicating that the order was processed successfully, allowing the caller to know that the order was fulfilled and the inventory was updated accordingly, ensuring that the order processing logic provides clear feedback on the outcome of the order processing
 }
 
-void Inventory::removeProduct(int productId)
-{
-	std::lock_guard<std::mutex> lock(m_inventoryMutex); //Locking the inventory mutex to ensure thread safety while modifying the inventory, allowing for concurrent modifications to the inventory without risking data corruption
-	m_products.erase(productId); //Removing the product from the inventory using its unique ID as the key, ensuring that the product is properly removed and the inventory data is updated accordingly, allowing for effective management of products in the inventory and maintaining accurate records of available products
+
+// Inventory.cpp
+void Inventory::deactivateProduct(int productId) {
+    std::lock_guard<std::mutex> lock(m_inventoryMutex);
+
+    auto it = m_products.find(productId);
+    if (it != m_products.end()) {
+        // 1. Update the live object in RAM
+        it->second->setActive(false);
+
+        // 2. Delegate file saving to the Manager
+        ProductFileManager::updateProductActiveStatus(INVENTORY_FILE, productId, 0);
+    }
 }
 
 void Inventory::increaseStock(int productId, int amount)
