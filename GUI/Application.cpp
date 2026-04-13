@@ -38,6 +38,44 @@ Application::Application()
         });
 
 	m_searchBox = TextBox(m_font, { 300, 30 }, { 200, 80 }); //Initializing the search text box with a specified font, size, and position, allowing users to enter text to search for products in the inventory, ensuring that we have an interactive element in the interface for users to input search queries and filter the displayed products accordingly
+
+    // Main Menu Button
+    m_filterMenuBtn = Button(m_font, "Filter/Sort", { 120, 30 }, { 520, 80 });
+    m_filterMenuBtn.setCallback([this] {
+        m_isMenuOpen = !m_isMenuOpen; // Toggle the dropdown
+        });
+
+    // Dropdown Option 1: Price Low to High
+    m_sortPriceBtn = Button(m_font, "Price: Asc", { 120, 30 }, { 520, 110 });
+    m_sortPriceBtn.setCallback([this] {
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::PriceAsc);
+        m_isMenuOpen = false;
+        });
+
+    // Dropdown Option 2: Price High to Low
+    m_sortPriceDescBtn = Button(m_font, "Price: Desc", { 120, 30 }, { 520, 140 });
+    m_sortPriceDescBtn.setCallback([this] {
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::PriceDesc);
+        m_isMenuOpen = false;
+        });
+
+    // Dropdown Option 3: Stock Low to High
+    m_sortQtyAscBtn = Button(m_font, "Qty: Asc", { 120, 30 }, { 520, 170 });
+    m_sortQtyAscBtn.setCallback([this] {
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyAsc);
+        m_isMenuOpen = false;
+        });
+
+    // Dropdown Option 4: Stock High to Low
+    m_sortQtyBtn = Button(m_font, "Qty: Desc", { 120, 30 }, { 520, 200 }); // Next slot at 200
+    m_sortQtyBtn.setCallback([this] {
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyDesc);
+        m_isMenuOpen = false;
+        });
+    // Initial load so the screen isn't blank
+    m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyDesc);
+
+    m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
 }
 
 void Application::run()
@@ -160,7 +198,20 @@ void Application::processEvents()
 		m_searchBox.handleEvent(*e, m_window); //Handling events for the search text box, including mouse clicks for focus and text input, allowing users to enter text to search for products in the inventory. The TextBox handles focus, backspace, character input, and updates its internal value, providing an interactive search functionality in the application.
 
 		m_simulateBtn.handleEvent(*e, m_window); //Handling events for the "Run Simulation" button, allowing the button to respond to user interactions such as mouse clicks. This ensures that when users click the button, the associated callback function is executed to start the order processing simulation, providing an interactive element in the interface for users to engage with and trigger the simulation of order processing based on their input.
+        
+        // 1. Handle the main toggle button
+        m_filterMenuBtn.handleEvent(*e, m_window);
+
+        // 2. Only handle the sub-options if the menu is open
+        if (m_isMenuOpen)
+        {
+            m_sortPriceBtn.handleEvent(*e, m_window);     // Price: Low
+            m_sortPriceDescBtn.handleEvent(*e, m_window); // Price: High
+            m_sortQtyAscBtn.handleEvent(*e, m_window);    // Qty: Low
+            m_sortQtyBtn.handleEvent(*e, m_window);       // Qty: High
+        }
     }
+
 }
 
 void Application::render() //Rendering the user interface of the application, including drawing the main window, GUI components such as buttons, text boxes, and charts, and displaying relevant information such as inventory details and order processing metrics. This function ensures that the application provides a visually appealing and informative interface for users to interact with and monitor the state of the inventory and order processing system, allowing users to see the results of their interactions and the current status of the inventory and order processing metrics in real-time.
@@ -190,11 +241,10 @@ void Application::render() //Rendering the user interface of the application, in
     int col = 0;
 
 	m_search = m_searchBox.getValue(); //Retrieving the current search query from the text box, allowing us to use it for filtering products in the inventory. This ensures that the search functionality is synchronized with the text box's value, providing a responsive and interactive search experience for users.
-
-	for (auto& [id, p] : products) //Iterating through the products in the inventory, allowing us to create visual representations of each product in the user interface. For each product, we check if it matches the current search query entered by the user, and if it does, we create a card to display the product's name and stock quantity. This loop ensures that only products that match the search criteria are displayed, providing a filtered view of the inventory based on user input, and allowing users to easily find and monitor specific products in the inventory.
+    // Loop through the SORTED list instead of the map
+    for (auto& p : m_viewedProducts)
     {
-        if (!m_search.empty() &&
-			p->getName().find(m_search) == std::string::npos)// Checking if the search query is not empty and if the product's name does not contain the search query, allowing us to filter out products that do not match the user's search input. If a product does not match the search criteria, we skip rendering it in the user interface, ensuring that users only see products that are relevant to their search query, providing a more focused and efficient way for users to find specific products in the inventory.
+        if (!m_search.empty() && p->getName().find(m_search) == std::string::npos)
             continue;
 
 		sf::RectangleShape card({ 220,70 }); //Creating a rectangle shape to represent a product card or a bar in the user interface, allowing us to visually display information about each product in a structured and organized manner. The card will contain the product's name and stock quantity, providing users with a clear and concise representation of the products available in the inventory, enabling them to easily monitor stock levels and identify specific products based on their search queries.
@@ -297,6 +347,15 @@ void Application::render() //Rendering the user interface of the application, in
 	sf::Text chartLabel(m_font, "Success vs Failed", 18); //Creating a text object to serve as a label for the pie chart, allowing us to provide context and information about what the chart represents. This label will be rendered near the pie chart, giving users a clear understanding of the data being visualized in the chart, enabling them to quickly grasp that the chart is comparing successful orders versus failed orders, providing valuable insights into the performance of the order processing system based on the visual representation of the success ratio in the pie chart.
     chartLabel.setPosition({ 880,505 });
     m_window.draw(chartLabel);
+
+    //Draw the dropdown so it floats on top of everything
+    m_filterMenuBtn.draw(m_window);
+    if (m_isMenuOpen) {
+        m_sortPriceBtn.draw(m_window);
+        m_sortPriceDescBtn.draw(m_window);
+        m_sortQtyAscBtn.draw(m_window);
+        m_sortQtyBtn.draw(m_window);
+    }
 
     m_window.display();
 }

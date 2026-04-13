@@ -1,9 +1,2 @@
-﻿  OrderProcessor.cpp
-  Inventory.cpp
-  ThreadPool.cpp
-  Application.cpp
-  CSVLoader.cpp
-  ProductManager.cpp
-  main.cpp
-  Generating Code...
-  Comp315 Project.vcxproj -> C:\Users\calvi\source\repos\Yes\Comp315-Project\Debug\Comp315 Project.exe
+﻿  Application.cpp
+  Comp315 Project.vcxproj -> C:\Users\Admin\source\repos\Comp315-Project\Debug\Comp315 Project.exe

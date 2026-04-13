@@ -1,4 +1,6 @@
 #include "Inventory.h"
+#include <algorithm> // Required for std::sort
+#include <vector>    // Required for std::vector
 
 void Inventory::addProduct(std::shared_ptr<Product> product) //Adding a new product to the inventory, using shared_ptr to manage the memory of the product and allow for polymorphism, ensuring that the product is properly stored and accessible in the inventory
 {
@@ -54,4 +56,36 @@ void Inventory::increaseStock(int productId, int amount)
 	auto it = m_products.find(productId); //Looking up the product in the inventory by its unique ID, allowing for efficient retrieval of product information based on the product ID, ensuring that we can quickly determine if the product exists in the inventory and access its details for stock management
     if (it != m_products.end())
 		it->second->increaseStock(amount); //Increasing the stock of the product by the specified amount, ensuring that the inventory levels are updated correctly when new inventory is added or when correcting stock levels, allowing for proper inventory management and accurate tracking of available products
+}
+
+std::vector<std::shared_ptr<Product>> Inventory::getSortedProducts(SortCriteria criteria) const
+{
+    // 1. Thread Safety: Lock the mutex before touching the map
+    std::lock_guard<std::mutex> lock(m_inventoryMutex);
+
+    // 2. Copy: Move pointers from the map to a vector
+    std::vector<std::shared_ptr<Product>> sortedList;
+    sortedList.reserve(m_products.size()); // Optimization: pre-allocate memory
+
+    for (const auto& pair : m_products) {
+        sortedList.push_back(pair.second);
+    }
+
+    // 3. Sort: Use std::sort with a lambda based on the criteria
+    std::sort(sortedList.begin(), sortedList.end(), [criteria](const std::shared_ptr<Product>& a, const std::shared_ptr<Product>& b) {
+        switch (criteria) {
+        case SortCriteria::PriceAsc:
+            return a->getPrice() < b->getPrice();
+        case SortCriteria::PriceDesc:
+            return a->getPrice() > b->getPrice();
+        case SortCriteria::QtyAsc:
+            return a->getQuantity() < b->getQuantity();
+        case SortCriteria::QtyDesc:
+            return a->getQuantity() > b->getQuantity();
+        default:
+            return false;
+        }
+        });
+
+    return sortedList;
 }
