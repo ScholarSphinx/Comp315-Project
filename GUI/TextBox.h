@@ -47,6 +47,15 @@ public:
     }
 
 	const std::string& getValue() const { return m_value; } //Getter for the current value of the TextBox, allowing other parts of the application to retrieve the text that has been entered by the user, providing access to the text box's content for further processing or display elsewhere in the application
+	void setValue(const std::string& value) //Setter for the current value of the TextBox, allowing UI logic to prefill or reset the box programmatically, ensuring that form-style workflows (such as add-product panels) can clear or populate fields when needed
+    {
+        m_value = value;
+        if (m_text) m_text->setString(m_value);
+    }
+	void clear() //Clearing the current value of the TextBox, allowing calling code to reset the text field content after a form submission or when closing a panel, ensuring a clean state for subsequent user input
+    {
+        setValue("");
+    }
 
 	void draw(sf::RenderWindow& window) //Drawing the TextBox on the provided SFML render window, allowing the text box to be visually represented in the application, ensuring that both the background box and the text (if it exists) are rendered correctly for the user to see and interact with
     {

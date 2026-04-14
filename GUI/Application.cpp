@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cctype>
 #include <SFML/System.hpp>
+#include <stdexcept>
 
 Application::Application()
 	: m_window(sf::VideoMode({ 1150u,600u }), "Inventory System") //Creating the main application window with a specified size and title, allowing us to display the user interface and interact with the inventory system, ensuring that we have a dedicated space for rendering the GUI components and providing a visually appealing interface for users to engage with the application
@@ -82,6 +83,58 @@ Application::Application()
     m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyDesc);
 
     m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
+
+    m_showAddProductBtn = Button(m_font, "Add Product", { 120, 30 }, { 650, 80 });
+    m_showAddProductBtn.setCallback([this] {
+        m_isRemoveProductPanelOpen = false;
+        m_isAddProductPanelOpen = true;
+        m_selectedAddType = "TAX";
+        m_addProductError.clear();
+        m_addNameBox.clear();
+        m_addStockBox.clear();
+        m_addPriceBox.clear();
+        });
+
+    m_addTypeTaxBtn = Button(m_font, "TAX", { 230, 30 }, { 835, 202 });
+    m_addTypeTaxBtn.setCallback([this] {
+        m_selectedAddType = "TAX";
+        });
+
+    m_addTypeDiscBtn = Button(m_font, "DISC", { 230, 30 }, { 835, 236 });
+    m_addTypeDiscBtn.setCallback([this] {
+        m_selectedAddType = "DISC";
+        });
+
+    m_addNameBox = TextBox(m_font, { 230, 30 }, { 835, 314 });
+    m_addStockBox = TextBox(m_font, { 230, 30 }, { 835, 384 });
+    m_addPriceBox = TextBox(m_font, { 230, 30 }, { 835, 454 });
+
+    m_submitAddProductBtn = Button(m_font, "Add Product", { 150, 36 }, { 875, 500 });
+    m_submitAddProductBtn.setCallback([this] {
+        submitAddProductForm();
+        });
+
+    m_closeOverlayBtn = Button(m_font, "X", { 32, 28 }, { 1060, 128 });
+    m_closeOverlayBtn.setCallback([this] {
+        m_isAddProductPanelOpen = false;
+        m_isRemoveProductPanelOpen = false;
+        m_addProductError.clear();
+        m_removeProductError.clear();
+        });
+
+    m_showRemoveProductBtn = Button(m_font, "Remove Product", { 140, 30 }, { 780, 80 });
+    m_showRemoveProductBtn.setCallback([this] {
+        m_isAddProductPanelOpen = false;
+        m_isRemoveProductPanelOpen = true;
+        m_removeProductError.clear();
+        m_removeIdBox.clear();
+        });
+
+    m_removeIdBox = TextBox(m_font, { 230, 30 }, { 835, 250 });
+    m_submitRemoveProductBtn = Button(m_font, "Remove Product", { 170, 36 }, { 865, 330 });
+    m_submitRemoveProductBtn.setCallback([this] {
+        submitRemoveProductForm();
+        });
 }
 
 void Application::run()
@@ -120,79 +173,22 @@ void Application::processEvents()
         else if (auto* key = e->getIf<sf::Event::KeyPressed>())
         {
 
-            // A Key = Add Product
+            // A Key = Open Add Product panel
             if (key->code == sf::Keyboard::Key::A)
             {
-                // 1. Get ID automatically from the file
-                int nextId = ProductFileManager::calculateNextId(INVENTORY_FILE);
-
-                // 2. Get User Inputs (Mocked calls to your UI/Popup logic)
-                // You would replace these with your actual popup return values
-                /*std::string uType = promptUser("Enter Type (TAX or DISC): ");
-                std::string uName = promptUser("Enter Name: ");
-                double uPrice = promptDouble("Enter Price: ");
-                int uQty = promptInt("Enter Quantity: ");
-                double uRate = promptDouble("Enter Rate (e.g. 0.15): ");*/
-
-                std::string uType = "TAX";    // Taxable type //Please make this a dropdown
-                std::string uName = "USBs";    // Product Name
-                double uPrice = 25.0;         // $25.00 each
-                int uQty = 50;                // 50 units in stock
-                double uRate = 0.15;          // 15% Tax rate  
-
-                //For Sidd
-				//Remove the dummy data and create the actual popups to get user input for the new product details, including the type (TAX or DISC), name, price, quantity, and rate (tax or discount). This will allow users to add new products to the inventory with their specific details through an interactive interface, ensuring that the product information is accurately captured and added to the inventory system.
-
-                std::shared_ptr<Product> product;
-
-                // 3. Create the specific child class based on user input
-                if (uType == "DISC")
-                {
-                    product = std::make_shared<DiscountedProduct>(
-                        nextId, uName, uPrice, uQty, uRate
-                    );
-                }
-                else // Default to Taxable
-                {
-                    product = std::make_shared<TaxableProduct>(
-                        nextId, uName, uPrice, uQty, uRate
-                    );
-                }
-
-                // 4. Add to Inventory (RAM)
-                m_inventory.addProduct(product);
-
-                // 5. Add to File (Disk) with the active status 1
-                ProductFileManager::addProductToFile(INVENTORY_FILE, product, uType, uRate);
-
-                //std::cout << "Product Added successfully with ID: " << nextId << std::endl;
-            m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
+                m_isRemoveProductPanelOpen = false;
+                m_isAddProductPanelOpen = true;
+                m_selectedAddType = "TAX";
+                m_addProductError.clear();
             }
 
 
-            // D Key = Remove Product
+            // D Key = Open Remove Product panel
             if (key->code == sf::Keyboard::Key::D)
             {
-
-                int mockIdToRemove = 3;
-
-                // This handles the internal bool AND the text file
-                m_inventory.deactivateProduct(mockIdToRemove);
-                m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
-                //For Sid to sort the GUI for
-                //int idToRemove;
-                //std::cout << "Enter Product ID to deactivate: ";
-
-                //// Safety check for user input
-                //if (std::cin >> idToRemove) {
-                //   m_inventory.deactivateProduct(idToRemove);
-                //}
-
-                //// Clear cin buffer to prevent issues with other inputs
-                //std::cin.clear();
-                //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                // for redstarting, it mustn't pull from the textfile again
-
+                m_isAddProductPanelOpen = false;
+                m_isRemoveProductPanelOpen = true;
+                m_removeProductError.clear();
             }
 
 
@@ -207,17 +203,126 @@ void Application::processEvents()
         }
 
 		m_searchBox.handleEvent(*e, m_window); //Handling events for the search text box, including mouse clicks for focus and text input, allowing users to enter text to search for products in the inventory. The TextBox handles focus, backspace, character input, and updates its internal value, providing an interactive search functionality in the application.
+        if (m_isAddProductPanelOpen)
+        {
+            m_addNameBox.handleEvent(*e, m_window);
+            m_addStockBox.handleEvent(*e, m_window);
+            m_addPriceBox.handleEvent(*e, m_window);
+            m_addTypeTaxBtn.handleEvent(*e, m_window);
+            m_addTypeDiscBtn.handleEvent(*e, m_window);
+        }
+        if (m_isRemoveProductPanelOpen)
+        {
+            m_removeIdBox.handleEvent(*e, m_window);
+        }
 
 		m_simulateBtn.handleEvent(*e, m_window); //Handling events for the "Run Simulation" button, allowing the button to respond to user interactions such as mouse clicks. This ensures that when users click the button, the associated callback function is executed to start the order processing simulation, providing an interactive element in the interface for users to engage with and trigger the simulation of order processing based on their input.
-        m_filterMenuBtn.handleEvent(*e, m_window); //Handle click for opening/closing the dropdown menu.
-        if (m_isMenuOpen)
+        m_showAddProductBtn.handleEvent(*e, m_window);
+        m_showRemoveProductBtn.handleEvent(*e, m_window);
+        if (m_isAddProductPanelOpen)
         {
-            m_sortPriceBtn.handleEvent(*e, m_window);
-            m_sortPriceDescBtn.handleEvent(*e, m_window);
-            m_sortQtyAscBtn.handleEvent(*e, m_window);
-            m_sortQtyBtn.handleEvent(*e, m_window);
+            m_submitAddProductBtn.handleEvent(*e, m_window);
+        }
+        if (m_isRemoveProductPanelOpen)
+        {
+            m_submitRemoveProductBtn.handleEvent(*e, m_window);
+        }
+        if (m_isAddProductPanelOpen || m_isRemoveProductPanelOpen)
+        {
+            m_closeOverlayBtn.handleEvent(*e, m_window);
+        }
+        if (!m_isAddProductPanelOpen && !m_isRemoveProductPanelOpen)
+        {
+            m_filterMenuBtn.handleEvent(*e, m_window); //Handle click for opening/closing the dropdown menu.
+            if (m_isMenuOpen)
+            {
+                m_sortPriceBtn.handleEvent(*e, m_window);
+                m_sortPriceDescBtn.handleEvent(*e, m_window);
+                m_sortQtyAscBtn.handleEvent(*e, m_window);
+                m_sortQtyBtn.handleEvent(*e, m_window);
+            }
         }
     }
+}
+
+void Application::submitAddProductForm()
+{
+    const std::string productName = m_addNameBox.getValue();
+    if (productName.empty())
+    {
+        m_addProductError = "Name is required.";
+        return;
+    }
+
+    int quantity = 0;
+    double price = 0.0;
+    try
+    {
+        quantity = std::stoi(m_addStockBox.getValue());
+        price = std::stod(m_addPriceBox.getValue());
+    }
+    catch (const std::exception&)
+    {
+        m_addProductError = "Stock and price must be valid numbers.";
+        return;
+    }
+
+    if (quantity < 0 || price < 0.0)
+    {
+        m_addProductError = "Stock and price must be non-negative.";
+        return;
+    }
+
+    const int nextId = ProductFileManager::calculateNextId(INVENTORY_FILE);
+    const std::string type = m_selectedAddType;
+    const double rate = (type == "DISC") ? 0.10 : 0.15;
+
+    std::shared_ptr<Product> product;
+    if (type == "DISC")
+    {
+        product = std::make_shared<DiscountedProduct>(nextId, productName, price, quantity, rate);
+    }
+    else
+    {
+        product = std::make_shared<TaxableProduct>(nextId, productName, price, quantity, rate);
+    }
+    m_inventory.addProduct(product);
+    ProductFileManager::addProductToFile(INVENTORY_FILE, product, type, rate);
+
+    m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
+    m_addProductError.clear();
+    m_selectedAddType = "TAX";
+    m_addNameBox.clear();
+    m_addStockBox.clear();
+    m_addPriceBox.clear();
+    m_isAddProductPanelOpen = false;
+}
+
+void Application::submitRemoveProductForm()
+{
+    int productId = 0;
+    try
+    {
+        productId = std::stoi(m_removeIdBox.getValue());
+    }
+    catch (const std::exception&)
+    {
+        m_removeProductError = "Product ID must be a valid number.";
+        return;
+    }
+
+    if (productId <= 0)
+    {
+        m_removeProductError = "Product ID must be greater than 0.";
+        return;
+    }
+
+    // Use existing inventory remove/deactivate implementation.
+    m_inventory.deactivateProduct(productId);
+    m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
+    m_removeProductError.clear();
+    m_removeIdBox.clear();
+    m_isRemoveProductPanelOpen = false;
 }
 
 std::string toLower(std::string data) {
@@ -369,12 +474,94 @@ void Application::render() //Rendering the user interface of the application, in
     m_window.draw(chartLabel);
 
     //Draw the dropdown so it floats on top of everything
+    m_showAddProductBtn.draw(m_window);
+    m_showRemoveProductBtn.draw(m_window);
     m_filterMenuBtn.draw(m_window);
     if (m_isMenuOpen) {
         m_sortPriceBtn.draw(m_window);
         m_sortPriceDescBtn.draw(m_window);
         m_sortQtyAscBtn.draw(m_window);
         m_sortQtyBtn.draw(m_window);
+    }
+
+    if (m_isAddProductPanelOpen)
+    {
+        sf::RectangleShape addPanel({ 300,430 });
+        addPanel.setPosition({ 800,120 });
+        addPanel.setFillColor({ 28,30,38 });
+        addPanel.setOutlineThickness(2);
+        addPanel.setOutlineColor({ 90,90,110 });
+        m_window.draw(addPanel);
+
+        sf::Text panelTitle(m_font, "Add Product", 20);
+        panelTitle.setPosition({ 885, 145 });
+        m_window.draw(panelTitle);
+
+        sf::Text typeLabel(m_font, "Type", 16);
+        typeLabel.setPosition({ 835, 180 });
+        m_window.draw(typeLabel);
+        m_addTypeTaxBtn.draw(m_window);
+        m_addTypeDiscBtn.draw(m_window);
+
+        sf::Text typeState(m_font, "Selected: " + m_selectedAddType, 14);
+        typeState.setPosition({ 835, 270 });
+        typeState.setFillColor({ 200, 220, 255 });
+        m_window.draw(typeState);
+
+        sf::Text nameLabel(m_font, "Name", 16);
+        nameLabel.setPosition({ 835, 292 });
+        m_window.draw(nameLabel);
+        m_addNameBox.draw(m_window);
+
+        sf::Text stockLabel(m_font, "Stock", 16);
+        stockLabel.setPosition({ 835, 362 });
+        m_window.draw(stockLabel);
+        m_addStockBox.draw(m_window);
+
+        sf::Text priceLabel(m_font, "Price", 16);
+        priceLabel.setPosition({ 835, 432 });
+        m_window.draw(priceLabel);
+        m_addPriceBox.draw(m_window);
+
+        if (!m_addProductError.empty())
+        {
+            sf::Text errorText(m_font, m_addProductError, 14);
+            errorText.setPosition({ 815, 486 });
+            errorText.setFillColor({ 230, 90, 90 });
+            m_window.draw(errorText);
+        }
+
+        m_submitAddProductBtn.draw(m_window);
+        m_closeOverlayBtn.draw(m_window);
+    }
+    if (m_isRemoveProductPanelOpen)
+    {
+        sf::RectangleShape removePanel({ 300,430 });
+        removePanel.setPosition({ 800,120 });
+        removePanel.setFillColor({ 28,30,38 });
+        removePanel.setOutlineThickness(2);
+        removePanel.setOutlineColor({ 90,90,110 });
+        m_window.draw(removePanel);
+
+        sf::Text panelTitle(m_font, "Remove Product", 20);
+        panelTitle.setPosition({ 862, 145 });
+        m_window.draw(panelTitle);
+
+        sf::Text idLabel(m_font, "Product ID", 16);
+        idLabel.setPosition({ 835, 225 });
+        m_window.draw(idLabel);
+        m_removeIdBox.draw(m_window);
+
+        if (!m_removeProductError.empty())
+        {
+            sf::Text errorText(m_font, m_removeProductError, 14);
+            errorText.setPosition({ 815, 295 });
+            errorText.setFillColor({ 230, 90, 90 });
+            m_window.draw(errorText);
+        }
+
+        m_submitRemoveProductBtn.draw(m_window);
+        m_closeOverlayBtn.draw(m_window);
     }
     m_window.display();
 }

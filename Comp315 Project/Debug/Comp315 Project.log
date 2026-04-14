@@ -1,20 +1,2 @@
-﻿  Button.cpp
-  Config.cpp
-  Application.cpp
-  DiscountedProduct.cpp
-  Inventory.cpp
-  TextBox.cpp
-  CSVLoader.cpp
-  Logger.cpp
-  main.cpp
-  Product.cpp
-  TaxableProduct.cpp
-  Order.cpp
-  OrderProcessor.cpp
-  PieChart.cpp
-  Repository.cpp
-  ThreadPool.cpp
-  ProductManager.cpp
-  RandomGenerator.cpp
-  Generating Code...
+﻿  Application.cpp
   Comp315 Project.vcxproj -> C:\Users\Siddhar\Source\Repos\Comp315-Project\Debug\Comp315 Project.exe

@@ -24,6 +24,8 @@ public:
 private:
 	void processEvents(); //Processing user input events such as mouse clicks and keyboard input, allowing the application to respond to user interactions with the GUI components, ensuring that users can interact with buttons, text boxes, and other elements of the interface to perform actions such as simulating orders and searching for products in the inventory
 	void render(); //Rendering the user interface of the application, including drawing the main window, GUI components such as buttons, text boxes, and charts, and displaying relevant information such as inventory details and order processing metrics, ensuring that the application provides a visually appealing and informative interface for users to interact with and monitor the state of the inventory and order processing system
+	void submitAddProductForm();
+	void submitRemoveProductForm();
 
 	sf::RenderWindow m_window; //Using an SFML RenderWindow to create the main application window, allowing for rendering of graphics and handling of user input events, ensuring that we have a dedicated window for displaying the application's user interface and responding to user interactions effectively
 	sf::Font m_font; //Using an SFML Font to load and manage font resources for rendering text in the application, allowing for consistent and visually appealing text display in the GUI components, ensuring that we can display product information, metrics, and other textual content in a clear and readable manner throughout the application
@@ -51,6 +53,22 @@ private:
 	Button m_sortQtyBtn;
 	Button m_sortPriceBtn;
 	Button m_sortQtyAscBtn;
+	Button m_showAddProductBtn;
+	Button m_submitAddProductBtn;
+	Button m_closeOverlayBtn;
+	Button m_addTypeTaxBtn;
+	Button m_addTypeDiscBtn;
+	bool m_isAddProductPanelOpen = false;
+	std::string m_selectedAddType = "TAX";
+	TextBox m_addNameBox;
+	TextBox m_addStockBox;
+	TextBox m_addPriceBox;
+	std::string m_addProductError;
+	Button m_showRemoveProductBtn;
+	Button m_submitRemoveProductBtn;
+	bool m_isRemoveProductPanelOpen = false;
+	TextBox m_removeIdBox;
+	std::string m_removeProductError;
 
 	// Optional: A background for the dropdown to make it look like a real menu
 	sf::RectangleShape m_menuBackground;
