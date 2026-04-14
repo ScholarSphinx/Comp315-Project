@@ -68,6 +68,7 @@ private:
 	Button m_submitRemoveProductBtn;
 	bool m_isRemoveProductPanelOpen = false;
 	TextBox m_removeIdBox;
+	Button m_restockBtn;
 	std::string m_removeProductError;
 
 	// Optional: A background for the dropdown to make it look like a real menu

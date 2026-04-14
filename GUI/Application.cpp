@@ -135,6 +135,13 @@ Application::Application()
     m_submitRemoveProductBtn.setCallback([this] {
         submitRemoveProductForm();
         });
+
+	m_restockBtn = Button(m_font, "Restock Low Inventory", { 200, 30 }, { 850, 560 });
+    m_restockBtn.setCallback([this] {
+        m_inventory.restockAll(MEDIUM_STOCK_THRESHOLD, RESTOCK_AMOUNT, RESTOCK_THRESHOLD);
+        m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
+		});
+
 }
 
 void Application::run()
@@ -166,41 +173,7 @@ void Application::processEvents()
                 m_search += static_cast<char>(text->unicode);
             }
         }
-
-
-        // Key Press Handling
-
-        else if (auto* key = e->getIf<sf::Event::KeyPressed>())
-        {
-
-            // A Key = Open Add Product panel
-            if (key->code == sf::Keyboard::Key::A)
-            {
-                m_isRemoveProductPanelOpen = false;
-                m_isAddProductPanelOpen = true;
-                m_selectedAddType = "TAX";
-                m_addProductError.clear();
-            }
-
-
-            // D Key = Open Remove Product panel
-            if (key->code == sf::Keyboard::Key::D)
-            {
-                m_isAddProductPanelOpen = false;
-                m_isRemoveProductPanelOpen = true;
-                m_removeProductError.clear();
-            }
-
-
-            // R Key = Restock Product
-
-            if (key->code == sf::Keyboard::Key::R)
-            {
-                // Clean, single-line call to the inventory system
-                m_inventory.restockAll(MEDIUM_STOCK_THRESHOLD, RESTOCK_AMOUNT, RESTOCK_THRESHOLD);
-                m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
-            }
-        }
+    
 
 		m_searchBox.handleEvent(*e, m_window); //Handling events for the search text box, including mouse clicks for focus and text input, allowing users to enter text to search for products in the inventory. The TextBox handles focus, backspace, character input, and updates its internal value, providing an interactive search functionality in the application.
         if (m_isAddProductPanelOpen)
@@ -219,6 +192,7 @@ void Application::processEvents()
 		m_simulateBtn.handleEvent(*e, m_window); //Handling events for the "Run Simulation" button, allowing the button to respond to user interactions such as mouse clicks. This ensures that when users click the button, the associated callback function is executed to start the order processing simulation, providing an interactive element in the interface for users to engage with and trigger the simulation of order processing based on their input.
         m_showAddProductBtn.handleEvent(*e, m_window);
         m_showRemoveProductBtn.handleEvent(*e, m_window);
+		m_restockBtn.handleEvent(*e, m_window);
         if (m_isAddProductPanelOpen)
         {
             m_submitAddProductBtn.handleEvent(*e, m_window);
@@ -477,6 +451,8 @@ void Application::render() //Rendering the user interface of the application, in
     m_showAddProductBtn.draw(m_window);
     m_showRemoveProductBtn.draw(m_window);
     m_filterMenuBtn.draw(m_window);
+	m_restockBtn.draw(m_window);
+
     if (m_isMenuOpen) {
         m_sortPriceBtn.draw(m_window);
         m_sortPriceDescBtn.draw(m_window);
