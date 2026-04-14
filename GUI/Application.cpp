@@ -10,6 +10,8 @@
 #include <thread>
 #include <cmath>
 #include <SFML/Window.hpp>
+#include <algorithm>
+#include <cctype>
 #include <SFML/System.hpp>
 
 Application::Application()
@@ -90,7 +92,7 @@ void Application::processEvents()
                 int uQty = promptInt("Enter Quantity: ");
                 double uRate = promptDouble("Enter Rate (e.g. 0.15): ");*/
 
-                std::string uType = "TAX";    // Taxable type
+                std::string uType = "TAX";    // Taxable type //Please make this a dropdown
                 std::string uName = "USBs";    // Product Name
                 double uPrice = 25.0;         // $25.00 each
                 int uQty = 50;                // 50 units in stock
@@ -145,6 +147,8 @@ void Application::processEvents()
                 //// Clear cin buffer to prevent issues with other inputs
                 //std::cin.clear();
                 //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                // for redstarting, it mustn't pull from the textfile again
+
             }
 
 
@@ -152,18 +156,8 @@ void Application::processEvents()
 
             if (key->code == sf::Keyboard::Key::R)
             {
-                const auto& products = m_inventory.getProducts();
-
-                if (!products.empty())
-                {
-                    int idToRestock =
-                        products.begin()->first;
-
-                    m_inventory.increaseStock(
-                        idToRestock,
-                        10   // restock amount
-                    );
-                }
+                // Clean, single-line call to the inventory system
+                m_inventory.restockAll(MEDIUM_STOCK_THRESHOLD, RESTOCK_AMOUNT, RESTOCK_THRESHOLD);
             }
         }
 
@@ -171,6 +165,12 @@ void Application::processEvents()
 
 		m_simulateBtn.handleEvent(*e, m_window); //Handling events for the "Run Simulation" button, allowing the button to respond to user interactions such as mouse clicks. This ensures that when users click the button, the associated callback function is executed to start the order processing simulation, providing an interactive element in the interface for users to engage with and trigger the simulation of order processing based on their input.
     }
+}
+
+std::string toLower(std::string data) {
+    std::transform(data.begin(), data.end(), data.begin(),
+        [](unsigned char c) { return std::tolower(c); });
+    return data;
 }
 
 void Application::render() //Rendering the user interface of the application, including drawing the main window, GUI components such as buttons, text boxes, and charts, and displaying relevant information such as inventory details and order processing metrics. This function ensures that the application provides a visually appealing and informative interface for users to interact with and monitor the state of the inventory and order processing system, allowing users to see the results of their interactions and the current status of the inventory and order processing metrics in real-time.
@@ -199,12 +199,19 @@ void Application::render() //Rendering the user interface of the application, in
     float x = 40, y = 120;
     int col = 0;
 
-	m_search = m_searchBox.getValue(); //Retrieving the current search query from the text box, allowing us to use it for filtering products in the inventory. This ensures that the search functionality is synchronized with the text box's value, providing a responsive and interactive search experience for users.
+
+
+    std::string searchLower = toLower(m_searchBox.getValue());//Retrieving the current search query from the text box, allowing us to use it for filtering products in the inventory. This ensures that the search functionality is synchronized with the text box's value, providing a responsive and interactive search experience for users.
 
 	for (auto& [id, p] : products) //Iterating through the products in the inventory, allowing us to create visual representations of each product in the user interface. For each product, we check if it matches the current search query entered by the user, and if it does, we create a card to display the product's name and stock quantity. This loop ensures that only products that match the search criteria are displayed, providing a filtered view of the inventory based on user input, and allowing users to easily find and monitor specific products in the inventory.
     {
-        if (!m_search.empty() &&
-			p->getName().find(m_search) == std::string::npos)// Checking if the search query is not empty and if the product's name does not contain the search query, allowing us to filter out products that do not match the user's search input. If a product does not match the search criteria, we skip rendering it in the user interface, ensuring that users only see products that are relevant to their search query, providing a more focused and efficient way for users to find specific products in the inventory.
+        if (!p->isActive()) { // Assuming isActive() returns the boolean/int status
+            continue;
+        }
+
+        std::string nameLower = toLower(p->getName()); //should sort case-sensitivity issue
+
+        if (!searchLower.empty() && nameLower.find(searchLower) == std::string::npos)// Checking if the search query is not empty and if the product's name does not contain the search query, allowing us to filter out products that do not match the user's search input. If a product does not match the search criteria, we skip rendering it in the user interface, ensuring that users only see products that are relevant to their search query, providing a more focused and efficient way for users to find specific products in the inventory.
             continue;
 
 		sf::RectangleShape card({ 220,70 }); //Creating a rectangle shape to represent a product card or a bar in the user interface, allowing us to visually display information about each product in a structured and organized manner. The card will contain the product's name and stock quantity, providing users with a clear and concise representation of the products available in the inventory, enabling them to easily monitor stock levels and identify specific products based on their search queries.
@@ -223,11 +230,11 @@ void Application::render() //Rendering the user interface of the application, in
         
 		int stockcount = p->getQuantity(); //Retrieving the stock quantity of the product, allowing us to determine how much of the product is currently available in the inventory. This information is crucial for rendering the stock indicator, which visually represents the stock level of the product in the user interface. By checking the stock quantity, we can set the color of the stock indicator to reflect whether the product is out of stock, low on stock, or sufficiently stocked, providing users with a quick and intuitive way to assess the availability of each product in the inventory at a glance.
 
-        if (stockcount == 0)
+        if (stockcount == NO_STOCK_THRESHOLD)
 			stockIndicator.setFillColor({ 200,50,50 }); // Setting the fill color of the stock indicator to red when the stock count is zero, indicating that the product is out of stock. This visual cue allows users to quickly identify products that are unavailable, providing an immediate understanding of the inventory status and helping users to make informed decisions about which products they can order or need to restock.
-        else if (stockcount <= 10)
+        else if (stockcount <= LOW_STOCK_THRESHOLD)
 			stockIndicator.setFillColor({ 200,150,50 }); // Setting the fill color of the stock indicator to orange when the stock count is less than or equal to 10, indicating that the product is low on stock. This visual cue allows users to quickly identify products that are running low, providing an immediate understanding of the inventory status and helping users to prioritize which products may need restocking soon or which products they should consider ordering before they run out.
-        else if (stockcount <= 20)
+        else if (stockcount <= MEDIUM_STOCK_THRESHOLD)
 			stockIndicator.setFillColor({ 200,200,50 }); // Setting the fill color of the stock indicator to yellow when the stock count is less than or equal to 20, indicating that the product is moderately stocked. This visual cue allows users to quickly identify products that have a reasonable amount of stock available, providing an immediate understanding of the inventory status and helping users to assess which products are sufficiently stocked and which ones may require attention in terms of restocking or ordering.
         else
 			stockIndicator.setFillColor({ 50,200,50 }); // Setting the fill color of the stock indicator to green when the stock count is greater than 20, indicating that the product is well-stocked. This visual cue allows users to quickly identify products that have a healthy amount of stock available, providing an immediate understanding of the inventory status and helping users to feel confident about ordering or relying on those products without concern for running out of stock in the near future.

@@ -26,5 +26,5 @@ public:
         double& revenueOut);
 
 	void deactivateProduct(int productId); //Removing a product from the inventory by its unique ID, ensuring that the product is properly removed and the inventory data is updated accordingly, allowing for effective management of products in the inventory and maintaining accurate records of available products
-	void increaseStock(int productId, int amount); //Increasing the stock of a product by a specified amount, ensuring that the inventory levels are updated correctly when new inventory is added or when correcting stock levels, allowing for proper inventory management and accurate tracking of available products
+	void restockAll(int mediumThreshold, int defaultAmount, int lowStockAmount); //Increasing the stock of a product by a specified amount, ensuring that the inventory levels are updated correctly when new inventory is added or when correcting stock levels, allowing for proper inventory management and accurate tracking of available products
 };

@@ -62,11 +62,17 @@ void Inventory::deactivateProduct(int productId) {
     }
 }
 
-void Inventory::increaseStock(int productId, int amount)
+void Inventory::restockAll(int mediumThreshold, int defaultAmount, int lowStockAmount)
 {
-	std::lock_guard<std::mutex> lock(m_inventoryMutex); //Locking the inventory mutex to ensure thread safety while modifying the inventory, allowing for concurrent modifications to the inventory without risking data corruption
+    // Lock once for the entire loop to ensure thread safety and performance
+    std::lock_guard<std::mutex> lock(m_inventoryMutex);
 
-	auto it = m_products.find(productId); //Looking up the product in the inventory by its unique ID, allowing for efficient retrieval of product information based on the product ID, ensuring that we can quickly determine if the product exists in the inventory and access its details for stock management
-    if (it != m_products.end())
-		it->second->increaseStock(amount); //Increasing the stock of the product by the specified amount, ensuring that the inventory levels are updated correctly when new inventory is added or when correcting stock levels, allowing for proper inventory management and accurate tracking of available products
+    for (auto& [id, p] : m_products)
+    {
+        // Logic: If current stock is below threshold, add the larger amount (e.g., 20)
+        // Otherwise, add the default restock amount (e.g., 5)
+        int amountToAdd = (p->getQuantity() < mediumThreshold) ? lowStockAmount : defaultAmount;
+
+        p->increaseStock(amountToAdd);
+    }
 }

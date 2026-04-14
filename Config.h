@@ -14,6 +14,13 @@ constexpr int MAX_ORDER_QUANTITY = 5;
 // --- Concurrency Limiter ---
 constexpr int MAX_CONCURRENT_THREADS = 8;
 
+// --- Restock Amount Default ---
+constexpr int RESTOCK_AMOUNT = 5;  //Default restock amount
+constexpr int RESTOCK_THRESHOLD = 20; //When stock is lower than 20 restock amount, otherwise restock a smaller amount
+constexpr int MEDIUM_STOCK_THRESHOLD = 20; 
+constexpr int NO_STOCK_THRESHOLD = 0;
+constexpr int LOW_STOCK_THRESHOLD = 10;
+
 
 // CSV Path
 constexpr const char* INVENTORY_FILE = "Assets/inventory.csv";
