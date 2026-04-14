@@ -50,6 +50,7 @@ Application::Application()
     // Dropdown Option 1: Price Low to High
     m_sortPriceBtn = Button(m_font, "Price: Asc", { 120, 30 }, { 520, 110 });
     m_sortPriceBtn.setCallback([this] {
+        m_currentSort = SortCriteria::PriceAsc;
         m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::PriceAsc);
         m_isMenuOpen = false;
         });
@@ -57,6 +58,7 @@ Application::Application()
     // Dropdown Option 2: Price High to Low
     m_sortPriceDescBtn = Button(m_font, "Price: Desc", { 120, 30 }, { 520, 140 });
     m_sortPriceDescBtn.setCallback([this] {
+        m_currentSort = SortCriteria::PriceDesc;
         m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::PriceDesc);
         m_isMenuOpen = false;
         });
@@ -64,6 +66,7 @@ Application::Application()
     // Dropdown Option 3: Stock Low to High
     m_sortQtyAscBtn = Button(m_font, "Qty: Asc", { 120, 30 }, { 520, 170 });
     m_sortQtyAscBtn.setCallback([this] {
+        m_currentSort = SortCriteria::QtyAsc;
         m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyAsc);
         m_isMenuOpen = false;
         });
@@ -71,6 +74,7 @@ Application::Application()
     // Dropdown Option 4: Stock High to Low
     m_sortQtyBtn = Button(m_font, "Qty: Desc", { 120, 30 }, { 520, 200 }); // Next slot at 200
     m_sortQtyBtn.setCallback([this] {
+        m_currentSort = SortCriteria::QtyDesc;
         m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyDesc);
         m_isMenuOpen = false;
         });
@@ -162,6 +166,7 @@ void Application::processEvents()
                 ProductFileManager::addProductToFile(INVENTORY_FILE, product, uType, uRate);
 
                 //std::cout << "Product Added successfully with ID: " << nextId << std::endl;
+            m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
             }
 
 
@@ -173,6 +178,7 @@ void Application::processEvents()
 
                 // This handles the internal bool AND the text file
                 m_inventory.deactivateProduct(mockIdToRemove);
+                m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
                 //For Sid to sort the GUI for
                 //int idToRemove;
                 //std::cout << "Enter Product ID to deactivate: ";
@@ -196,12 +202,21 @@ void Application::processEvents()
             {
                 // Clean, single-line call to the inventory system
                 m_inventory.restockAll(MEDIUM_STOCK_THRESHOLD, RESTOCK_AMOUNT, RESTOCK_THRESHOLD);
+                m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
             }
         }
 
 		m_searchBox.handleEvent(*e, m_window); //Handling events for the search text box, including mouse clicks for focus and text input, allowing users to enter text to search for products in the inventory. The TextBox handles focus, backspace, character input, and updates its internal value, providing an interactive search functionality in the application.
 
 		m_simulateBtn.handleEvent(*e, m_window); //Handling events for the "Run Simulation" button, allowing the button to respond to user interactions such as mouse clicks. This ensures that when users click the button, the associated callback function is executed to start the order processing simulation, providing an interactive element in the interface for users to engage with and trigger the simulation of order processing based on their input.
+        m_filterMenuBtn.handleEvent(*e, m_window); //Handle click for opening/closing the dropdown menu.
+        if (m_isMenuOpen)
+        {
+            m_sortPriceBtn.handleEvent(*e, m_window);
+            m_sortPriceDescBtn.handleEvent(*e, m_window);
+            m_sortQtyAscBtn.handleEvent(*e, m_window);
+            m_sortQtyBtn.handleEvent(*e, m_window);
+        }
     }
 }
 
@@ -233,7 +248,7 @@ void Application::render() //Rendering the user interface of the application, in
 
 	m_searchBox.draw(m_window); //Drawing the search box on the window, allowing it to be visually represented in the application. This ensures that the search box's shape and any text within it are rendered correctly on the screen, enabling users to see and interact with the search box in the application, providing a clear and interactive element for users to enter their search queries and filter the displayed products accordingly.
 
-	auto products = m_inventory.getProducts(); //Retrieving the products from the inventory, allowing us to access the product data for rendering in the user interface. This provides us with the necessary information about each product, such as its name and stock quantity, which we can use to create visual representations of the products in the application, enabling users to see the details of the products available in the inventory and their current stock levels.
+	auto& products = m_viewedProducts; //Render from the currently sorted/filtered view so dropdown selection is reflected on screen.
     float x = 40, y = 120;
     int col = 0;
 
@@ -241,7 +256,7 @@ void Application::render() //Rendering the user interface of the application, in
 
     std::string searchLower = toLower(m_searchBox.getValue());//Retrieving the current search query from the text box, allowing us to use it for filtering products in the inventory. This ensures that the search functionality is synchronized with the text box's value, providing a responsive and interactive search experience for users.
 
-	for (auto& [id, p] : products) //Iterating through the products in the inventory, allowing us to create visual representations of each product in the user interface. For each product, we check if it matches the current search query entered by the user, and if it does, we create a card to display the product's name and stock quantity. This loop ensures that only products that match the search criteria are displayed, providing a filtered view of the inventory based on user input, and allowing users to easily find and monitor specific products in the inventory.
+	for (auto& p : products) //Iterating through the products in the current view list, allowing us to create visual representations of each product in the user interface. For each product, we check if it matches the current search query entered by the user, and if it does, we create a card to display the product's name and stock quantity. This loop ensures that only products that match the search criteria are displayed, providing a filtered view of the inventory based on user input, and allowing users to easily find and monitor specific products in the inventory.
     {
         if (!p->isActive()) { // Assuming isActive() returns the boolean/int status
             continue;
