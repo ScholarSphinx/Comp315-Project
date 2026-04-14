@@ -1,2 +1,21 @@
-﻿  Application.cpp
-  Comp315 Project.vcxproj -> C:\Users\calvi\source\repos\Yes\Comp315-Project\Debug\Comp315 Project.exe
+﻿  Button.cpp
+  Config.cpp
+  Application.cpp
+  DiscountedProduct.cpp
+  Inventory.cpp
+  TextBox.cpp
+  CSVLoader.cpp
+  Logger.cpp
+  main.cpp
+  Product.cpp
+  TaxableProduct.cpp
+  Order.cpp
+  OrderProcessor.cpp
+  PieChart.cpp
+  Repository.cpp
+  ThreadPool.cpp
+  ProductManager.cpp
+  RandomGenerator.cpp
+  Generating Code...
+  LINK : C:\Users\calvi\OneDrive\Documents\GitHub\Comp315-Project\Debug\Comp315 Project.exe not found or not built by the last incremental link; performing full link
+  Comp315 Project.vcxproj -> C:\Users\calvi\OneDrive\Documents\GitHub\Comp315-Project\Debug\Comp315 Project.exe
