@@ -28,7 +28,17 @@ Application::Application()
         m_errorMessage = "Font failed to load.";
 
     std::string error;
-	if (!CSVLoader::load("Assets/inventory.csv", m_inventory, error)) //Loading product data from a CSV file into the inventory, parsing each line of the file to create product objects and add them to the inventory, while handling potential errors in file access and data parsing. If the loading process fails, we set an error message to inform the user about the issue, ensuring that we provide feedback on any problems encountered during the loading of the inventory data.
+    // In your main entry point or Controller
+    std::string targetFile;
+
+    if (EDIT_MODE) {
+        targetFile = EDITED_INVENTORY_FILE;
+    }
+    else {
+        targetFile = INVENTORY_FILE; // Your standard read-only/base file
+    }
+
+	if (!CSVLoader::load(targetFile, m_inventory, error)) //Loading product data from a CSV file into the inventory, parsing each line of the file to create product objects and add them to the inventory, while handling potential errors in file access and data parsing. If the loading process fails, we set an error message to inform the user about the issue, ensuring that we provide feedback on any problems encountered during the loading of the inventory data.
         m_errorMessage = error;
 
 	m_processor = std::make_unique<OrderProcessor>(m_inventory); //Creating an instance of the OrderProcessor class, passing a reference to the inventory, allowing the order processor to access and interact with the inventory data for processing orders, ensuring that the order processing logic can manage stock levels and calculate revenues based on the products available in the inventory
@@ -262,6 +272,7 @@ void Application::submitAddProductForm()
     }
     m_inventory.addProduct(product);
     ProductFileManager::addProductToFile(INVENTORY_FILE, product, type, rate);
+    ProductFileManager::addProductToFile(EDITED_INVENTORY_FILE, product, type, rate);
 
     m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
     m_addProductError.clear();

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <algorithm>
 #include "../IO/ProductManager.h"
+#include "../IO/Logger.h"
 
 void Inventory::addProduct(std::shared_ptr<Product> product) //Adding a new product to the inventory, using shared_ptr to manage the memory of the product and allow for polymorphism, ensuring that the product is properly stored and accessible in the inventory
 {
@@ -60,6 +61,7 @@ void Inventory::deactivateProduct(int productId) {
 
         // 2. Delegate file saving to the Manager
         ProductFileManager::updateProductActiveStatus(INVENTORY_FILE, productId, 0);
+        ProductFileManager::updateProductActiveStatus(EDITED_INVENTORY_FILE, productId, 0);
     }
 }
 
@@ -75,6 +77,74 @@ void Inventory::restockAll(int mediumThreshold, int defaultAmount, int lowStockA
         int amountToAdd = (p->getQuantity() < mediumThreshold) ? lowStockAmount : defaultAmount;
 
         p->increaseStock(amountToAdd);
+    }
+    if (EDIT_MODE)
+    {
+        saveToFile(EDITED_INVENTORY_FILE);
+    }
+}
+
+void Inventory::saveToFile(const std::string& filePath)
+{
+    // 1. Open the existing file to read the 'template' (the columns we don't have in memory)
+    std::ifstream inFile(filePath);
+    if (!inFile.is_open()) {
+        Logger::logError("Inventory Save: Could not open source file: " + filePath);
+        return;
+    }
+
+    std::stringstream updatedBuffer;
+    std::string line;
+
+    // 2. Process the file line by line
+    while (std::getline(inFile, line)) {
+        if (line.empty()) continue;
+
+        std::stringstream ss(line);
+        std::vector<std::string> columns;
+        std::string cell;
+
+        // Split the 7 columns into a vector for easy targeting
+        while (std::getline(ss, cell, ',')) {
+            columns.push_back(cell);
+        }
+
+        // We expect 7 columns: ID(0), Name(1), Price(2), Stock(3), AdjType(4), AdjRate(5), Status(6)
+        if (columns.size() >= 7) {
+            try {
+                int id = std::stoi(columns[0]);
+
+                // 3. Check if this product exists in our current memory map
+                if (m_products.find(id) != m_products.end()) {
+                    auto product = m_products[id];
+
+                    // 4. Update ONLY the Quantity and Status columns from memory
+                    // We leave columns[4] (AdjType) and columns[5] (AdjRate) exactly as they were
+                    columns[3] = std::to_string(product->getQuantity());
+                    columns[6] = product->isActive() ? "1" : "0";
+                }
+
+                // 5. Reconstruct the 7-column CSV line
+                for (size_t i = 0; i < columns.size(); ++i) {
+                    updatedBuffer << columns[i] << (i == columns.size() - 1 ? "" : ",");
+                }
+                updatedBuffer << "\n";
+            }
+            catch (const std::exception& e) {
+                Logger::logError("Inventory Save: Error processing ID at line: " + line);
+            }
+        }
+    }
+    inFile.close();
+
+    // 6. Overwrite the file with the updated 7-column buffer
+    std::ofstream outFile(filePath, std::ios::trunc);
+    if (outFile.is_open()) {
+        outFile << updatedBuffer.str();
+        outFile.close();
+    }
+    else {
+        Logger::logError("Inventory Save: Failed to write to " + filePath);
     }
 }
 std::vector<std::shared_ptr<Product>> Inventory::getSortedProducts(SortCriteria criteria) const

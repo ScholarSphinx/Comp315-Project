@@ -20,3 +20,14 @@ void Logger::logOrder(int orderNumber,
         << " | Result: " << (success ? "SUCCESS" : "FAILED")
         << "\n";
 }
+void Logger::logError(const std::string& message)
+{
+    std::lock_guard<std::mutex> lock(logMutex);
+
+    std::ofstream file("error_log.txt", std::ios::app);
+    if (!file) return;
+
+    file << "[ERROR]: " << message << "\n";
+
+   
+}

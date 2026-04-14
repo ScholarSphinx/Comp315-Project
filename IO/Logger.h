@@ -8,4 +8,6 @@ public:
         const std::string& productName,
         int quantity,
         bool success);
+
+    static void logError(const std::string& message);
 };

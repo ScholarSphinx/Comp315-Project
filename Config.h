@@ -23,4 +23,6 @@ constexpr int LOW_STOCK_THRESHOLD = 10;
 
 
 // CSV Path
-constexpr const char* INVENTORY_FILE = "Assets/inventory.csv";
+constexpr const char* INVENTORY_FILE = "Assets/inventory.csv"; //Used as a base
+constexpr const char* EDITED_INVENTORY_FILE = "Assets/inventory_editable.csv"; // Used for saving changes to the inventory, such as deactivating products or restocking, allowing us to maintain a persistent record of the inventory state and ensure that changes made during the application's operation are saved and can be loaded in future sessions, providing a way to manage and update the inventory data effectively while ensuring data integrity and consistency across application runs.
+constexpr bool EDIT_MODE = true; // Set to true to enable saving changes to the inventory, allowing us to persist modifications such as deactivating products or restocking across application sessions, ensuring that we can maintain an up-to-date and accurate inventory state while providing flexibility in how we manage and update the inventory data based on user interactions and application needs.

@@ -2,6 +2,8 @@
 #include <algorithm>
 #include "../Config.h"
 #include "../Core/ThreadPool.h"
+#include <fstream>
+#include <sstream>
 
 
 OrderProcessor::OrderProcessor(Inventory& inventory)
@@ -117,7 +119,65 @@ void OrderProcessor::simulate()
 
 	pool.wait(); //Waiting for all tasks in the thread pool to complete, allowing us to ensure that all worker threads have finished processing their assigned orders before proceeding with further actions in the simulation, providing a way to manage the execution flow of the application based on the completion of tasks in the thread pool and ensuring that we can accurately track the outcomes of all orders processed by the worker threads in a concurrent environment.
 
-    
+    if (EDIT_MODE)
+    {
+        saveChangesToEditableFile();
+    }
+}
+
+void OrderProcessor::saveChangesToEditableFile()
+{
+    // 1. Open the file to read the 'template' data (TAX, DISC, etc.)
+    std::ifstream inFile(EDITED_INVENTORY_FILE);
+    if (!inFile.is_open()) {
+        Logger::logError("Save Failed: Could not open source file for merging.");
+        return;
+    }
+
+    std::stringstream updatedBuffer;
+    std::string line;
+    const auto& productMap = m_inventory.getProducts();
+
+    // 2. Process line by line
+    while (std::getline(inFile, line)) {
+        if (line.empty()) continue;
+
+        std::stringstream ss(line);
+        std::vector<std::string> columns;
+        std::string cell;
+
+        // Split the 7 columns into a vector
+        while (std::getline(ss, cell, ',')) {
+            columns.push_back(cell);
+        }
+
+        if (columns.size() >= 7) {
+            int id = std::stoi(columns[0]);
+
+            // 3. Find this product in our memory to get the NEW quantity
+            auto it = productMap.find(id);
+            if (it != productMap.end()) {
+                // Update ONLY the quantity (Column 3, index 0,1,2,3)
+                // and Status (Column 6, index 0,1,2,3,4,5,6)
+                columns[3] = std::to_string(it->second->getQuantity());
+                columns[6] = it->second->isActive() ? "1" : "0";
+            }
+
+            // 4. Reconstruct the 7-column line
+            for (size_t i = 0; i < columns.size(); ++i) {
+                updatedBuffer << columns[i] << (i == columns.size() - 1 ? "" : ",");
+            }
+            updatedBuffer << "\n";
+        }
+    }
+    inFile.close();
+
+    // 5. Write the merged result back to the file
+    std::ofstream outFile(EDITED_INVENTORY_FILE, std::ios::trunc);
+    if (outFile.is_open()) {
+        outFile << updatedBuffer.str();
+        outFile.close();
+    }
 }
 
 

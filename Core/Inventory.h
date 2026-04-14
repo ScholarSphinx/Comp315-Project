@@ -25,8 +25,8 @@ public:
     std::vector<std::shared_ptr<Product>> getSortedProducts(SortCriteria criteria) const;
     // ---- Product management ----
 	void addProduct(std::shared_ptr<Product> product); //Adding a new product to the inventory, using shared_ptr to manage the memory of the product and allow for polymorphism, ensuring that the product is properly stored and accessible in the inventory
-
-	const std::unordered_map<int, std::shared_ptr<Product>>&  //Providing read-only access to the products in the inventory, allowing users to retrieve information about the products without modifying the inventory data, ensuring that the integrity of the inventory is maintained while still allowing access to product details
+	void saveToFile(const std::string& filePath); //Saving the current state of the inventory to a file, allowing for persistence of inventory data across application sessions, ensuring that we can maintain an up-to-date and accurate inventory state by writing the current state of the inventory to a file that can be loaded in future runs of the application, providing a way to manage and update the inventory data effectively while ensuring data integrity and consistency across application runs
+    const std::unordered_map<int, std::shared_ptr<Product>>&  //Providing read-only access to the products in the inventory, allowing users to retrieve information about the products without modifying the inventory data, ensuring that the integrity of the inventory is maintained while still allowing access to product details
         getProducts() const;
 
     // ---- Concurrency-safe order processing ----
