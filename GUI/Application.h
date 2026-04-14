@@ -37,4 +37,21 @@ private:
 
 	std::string m_search; //Using a string to store the current search query entered by the user in the search box, allowing us to keep track of the user's input and use it to filter and display relevant products from the inventory based on the search criteria, ensuring that we can provide a responsive and interactive search functionality in the application
 	std::string m_errorMessage; //Using a string to store any error messages that may occur during the application's operation, such as issues with loading the inventory or processing orders, allowing us to provide feedback to the user about any problems that arise and ensure that we can communicate important information about the application's state and any issues that need attention, enhancing the user experience by keeping them informed about the application's status and any errors that may occur
+
+	// --- Sort & Filter ---
+	SortCriteria m_currentSort = SortCriteria::QtyDesc; // Default sort
+	bool m_isMenuOpen = false;                        // Tracks if the dropdown is visible
+
+	// The  list used for rendering
+	std::vector<std::shared_ptr<Product>> m_viewedProducts;
+
+	// UI Elements
+	Button m_filterMenuBtn;
+	Button m_sortPriceDescBtn;
+	Button m_sortQtyBtn;
+	Button m_sortPriceBtn;
+	Button m_sortQtyAscBtn;
+
+	// Optional: A background for the dropdown to make it look like a real menu
+	sf::RectangleShape m_menuBackground;
 };
