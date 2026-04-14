@@ -84,7 +84,7 @@ Application::Application()
 
     m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
 
-    m_showAddProductBtn = Button(m_font, "Add Product", { 120, 30 }, { 650, 80 });
+    m_showAddProductBtn = Button(m_font, "Add Product", { 120, 30 }, { 800, 80 });
     m_showAddProductBtn.setCallback([this] {
         m_isRemoveProductPanelOpen = false;
         m_isAddProductPanelOpen = true;
@@ -122,7 +122,7 @@ Application::Application()
         m_removeProductError.clear();
         });
 
-    m_showRemoveProductBtn = Button(m_font, "Remove Product", { 140, 30 }, { 780, 80 });
+    m_showRemoveProductBtn = Button(m_font, "Remove Product", { 140, 30 }, { 960, 80 });
     m_showRemoveProductBtn.setCallback([this] {
         m_isAddProductPanelOpen = false;
         m_isRemoveProductPanelOpen = true;
