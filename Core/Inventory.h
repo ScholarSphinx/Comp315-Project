@@ -7,6 +7,13 @@
 #include "Product.h"
 #include "Order.h"
 
+enum class SortCriteria {
+    PriceAsc,
+    PriceDesc,
+    QtyAsc,
+    QtyDesc
+};
+
 class Inventory
 {
 private:
@@ -14,6 +21,8 @@ private:
 	mutable std::mutex m_inventoryMutex; //Using a mutex to protect access to the inventory data ensures thread safety when multiple threads are processing orders concurrently
 
 public:
+    // ---- Sort Products ----
+    std::vector<std::shared_ptr<Product>> getSortedProducts(SortCriteria criteria) const;
     // ---- Product management ----
 	void addProduct(std::shared_ptr<Product> product); //Adding a new product to the inventory, using shared_ptr to manage the memory of the product and allow for polymorphism, ensuring that the product is properly stored and accessible in the inventory
 

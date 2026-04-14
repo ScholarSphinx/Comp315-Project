@@ -76,3 +76,34 @@ void Inventory::restockAll(int mediumThreshold, int defaultAmount, int lowStockA
         p->increaseStock(amountToAdd);
     }
 }
+std::vector<std::shared_ptr<Product>> Inventory::getSortedProducts(SortCriteria criteria) const
+{
+    // 1. Thread Safety: Lock the mutex before touching the map
+    std::lock_guard<std::mutex> lock(m_inventoryMutex);
+
+    // 2. Copy: Move pointers from the map to a vector
+    std::vector<std::shared_ptr<Product>> sortedList;
+    sortedList.reserve(m_products.size()); // Optimization: pre-allocate memory
+
+    for (const auto& pair : m_products) {
+        sortedList.push_back(pair.second);
+    }
+
+    // 3. Sort: Use std::sort with a lambda based on the criteria
+    std::sort(sortedList.begin(), sortedList.end(), [criteria](const std::shared_ptr<Product>& a, const std::shared_ptr<Product>& b) {
+        switch (criteria) {
+        case SortCriteria::PriceAsc:
+            return a->getPrice() < b->getPrice();
+        case SortCriteria::PriceDesc:
+            return a->getPrice() > b->getPrice();
+        case SortCriteria::QtyAsc:
+            return a->getQuantity() < b->getQuantity();
+        case SortCriteria::QtyDesc:
+            return a->getQuantity() > b->getQuantity();
+        default:
+            return false;
+        }
+        });
+
+    return sortedList;
+}

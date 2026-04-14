@@ -40,6 +40,44 @@ Application::Application()
         });
 
 	m_searchBox = TextBox(m_font, { 300, 30 }, { 200, 80 }); //Initializing the search text box with a specified font, size, and position, allowing users to enter text to search for products in the inventory, ensuring that we have an interactive element in the interface for users to input search queries and filter the displayed products accordingly
+
+    // Main Menu Button
+    m_filterMenuBtn = Button(m_font, "Filter/Sort", { 120, 30 }, { 520, 80 });
+    m_filterMenuBtn.setCallback([this] {
+        m_isMenuOpen = !m_isMenuOpen; // Toggle the dropdown
+        });
+
+    // Dropdown Option 1: Price Low to High
+    m_sortPriceBtn = Button(m_font, "Price: Asc", { 120, 30 }, { 520, 110 });
+    m_sortPriceBtn.setCallback([this] {
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::PriceAsc);
+        m_isMenuOpen = false;
+        });
+
+    // Dropdown Option 2: Price High to Low
+    m_sortPriceDescBtn = Button(m_font, "Price: Desc", { 120, 30 }, { 520, 140 });
+    m_sortPriceDescBtn.setCallback([this] {
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::PriceDesc);
+        m_isMenuOpen = false;
+        });
+
+    // Dropdown Option 3: Stock Low to High
+    m_sortQtyAscBtn = Button(m_font, "Qty: Asc", { 120, 30 }, { 520, 170 });
+    m_sortQtyAscBtn.setCallback([this] {
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyAsc);
+        m_isMenuOpen = false;
+        });
+
+    // Dropdown Option 4: Stock High to Low
+    m_sortQtyBtn = Button(m_font, "Qty: Desc", { 120, 30 }, { 520, 200 }); // Next slot at 200
+    m_sortQtyBtn.setCallback([this] {
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyDesc);
+        m_isMenuOpen = false;
+        });
+    // Initial load so the screen isn't blank
+    m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyDesc);
+
+    m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
 }
 
 void Application::run()
@@ -315,5 +353,13 @@ void Application::render() //Rendering the user interface of the application, in
     chartLabel.setPosition({ 880,505 });
     m_window.draw(chartLabel);
 
+    //Draw the dropdown so it floats on top of everything
+    m_filterMenuBtn.draw(m_window);
+    if (m_isMenuOpen) {
+        m_sortPriceBtn.draw(m_window);
+        m_sortPriceDescBtn.draw(m_window);
+        m_sortQtyAscBtn.draw(m_window);
+        m_sortQtyBtn.draw(m_window);
+    }
     m_window.display();
 }
