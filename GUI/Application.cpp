@@ -117,6 +117,20 @@ Application::Application()
         m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::IDDesc);
         m_isMenuOpen = false;
         });
+
+    m_filterTaxBtn = Button(m_font, "Taxable", { 120, 30 }, { 520, 350 });
+    m_filterTaxBtn.setCallback([this] {
+        m_currentSort = SortCriteria::Tax;
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::Tax);
+        m_isMenuOpen = false;
+        });
+
+    m_filterDiscBtn = Button(m_font, "Discountable", { 120, 30 }, { 520, 380 });
+    m_filterDiscBtn.setCallback([this] {
+        m_currentSort = SortCriteria::Disc;
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::Disc);
+        m_isMenuOpen = false;
+        });
     // Initial load so the screen isn't blank
     m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyDesc);
 
@@ -256,6 +270,8 @@ void Application::processEvents()
 				m_sortNameDescBtn.handleEvent(*e, m_window);
 				m_sortIdAscBtn.handleEvent(*e, m_window);
 				m_sortIdDescBtn.handleEvent(*e, m_window);
+                m_filterTaxBtn.handleEvent(*e, m_window);
+                m_filterDiscBtn.handleEvent(*e, m_window);
             }
         }
     }
@@ -505,6 +521,8 @@ void Application::render() //Rendering the user interface of the application, in
 		m_sortNameDescBtn.draw(m_window);
 		m_sortIdAscBtn.draw(m_window);
 		m_sortIdDescBtn.draw(m_window);
+        m_filterDiscBtn.draw(m_window);
+        m_filterTaxBtn.draw(m_window);
     }
 
     if (m_isAddProductPanelOpen)

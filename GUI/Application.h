@@ -57,6 +57,8 @@ private:
 	Button m_sortNameDescBtn;
 	Button m_sortIdAscBtn;
 	Button m_sortIdDescBtn;
+	Button m_filterTaxBtn;
+	Button m_filterDiscBtn;
 	Button m_showAddProductBtn;
 	Button m_submitAddProductBtn;
 	Button m_closeOverlayBtn;

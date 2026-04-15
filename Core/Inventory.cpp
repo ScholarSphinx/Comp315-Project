@@ -1,5 +1,7 @@
 #include "../Config.h"
 #include "Inventory.h"
+#include "TaxableProduct.h"    
+#include "DiscountedProduct.h" 
 #include <fstream>
 #include <sstream>
 #include <vector>
@@ -157,7 +159,22 @@ std::vector<std::shared_ptr<Product>> Inventory::getSortedProducts(SortCriteria 
     sortedList.reserve(m_products.size()); // Optimization: pre-allocate memory
 
     for (const auto& pair : m_products) {
-        sortedList.push_back(pair.second);
+        // Check if we are filtering specifically for Taxable products [3]
+        if (criteria == SortCriteria::Tax) {
+            if (std::dynamic_pointer_cast<TaxableProduct>(pair.second)) {
+                sortedList.push_back(pair.second);
+            }
+        }
+        // Check if we are filtering specifically for Discounted products [7]
+        else if (criteria == SortCriteria::Disc) {
+            if (std::dynamic_pointer_cast<DiscountedProduct>(pair.second)) {
+                sortedList.push_back(pair.second);
+            }
+        }
+        else {
+            // For all other SortCriteria (Price, Qty, name,id), copy everything as usual
+            sortedList.push_back(pair.second);
+        }
     }
 
     // 3. Sort: Use std::sort with a lambda based on the criteria
