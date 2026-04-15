@@ -90,6 +90,7 @@ Application::Application()
         m_isMenuOpen = false;
         });
 
+	// Dropdown Option 5: Name A-Z
     m_sortNameAscBtn = Button(m_font, "Name: Asc", { 120, 30 }, { 520, 230 });
     m_sortNameAscBtn.setCallback([this] {
         m_currentSort = SortCriteria::NameAsc;
@@ -97,13 +98,15 @@ Application::Application()
         m_isMenuOpen = false;
     });
 
+	// Dropdown Option 6: Name Z-A
     m_sortNameDescBtn = Button(m_font, "Name: Desc", { 120, 30 }, { 520, 260 });
     m_sortNameDescBtn.setCallback([this] {
         m_currentSort = SortCriteria::NameDesc;
         m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::NameDesc);
         m_isMenuOpen = false;
     });
-
+    
+	// Dropdown Option 7: ID Asc
     m_sortIdAscBtn = Button(m_font, "ID: Asc", { 120, 30 }, { 520, 290 });
     m_sortIdAscBtn.setCallback([this] {
         m_currentSort = SortCriteria::IDAsc;
@@ -111,6 +114,7 @@ Application::Application()
         m_isMenuOpen = false;
         });
 
+	// Dropdown Option 8: ID Desc
     m_sortIdDescBtn = Button(m_font, "ID: Desc", { 120, 30 }, { 520, 320 });
     m_sortIdDescBtn.setCallback([this] {
         m_currentSort = SortCriteria::IDDesc;
@@ -118,6 +122,7 @@ Application::Application()
         m_isMenuOpen = false;
         });
 
+	// Dropdown Option 9: Taxable
     m_filterTaxBtn = Button(m_font, "Taxable", { 120, 30 }, { 520, 350 });
     m_filterTaxBtn.setCallback([this] {
         m_currentSort = SortCriteria::Tax;
@@ -125,22 +130,25 @@ Application::Application()
         m_isMenuOpen = false;
         });
 
+	// Dropdown Option 10: Discountable
     m_filterDiscBtn = Button(m_font, "Discountable", { 120, 30 }, { 520, 380 });
     m_filterDiscBtn.setCallback([this] {
         m_currentSort = SortCriteria::Disc;
         m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::Disc);
         m_isMenuOpen = false;
         });
+
     // Initial load so the screen isn't blank
     m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyDesc);
 
     m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
 
-    m_showAddProductBtn = Button(m_font, "Add Product", { 120, 30 }, { 800, 80 });
+    m_showAddProductBtn = Button(m_font, "Add Product", { 140, 35 }, { 800, 75 });
     m_showAddProductBtn.setCallback([this] {
         m_isRemoveProductPanelOpen = false;
         m_isAddProductPanelOpen = true;
         m_selectedAddType = "TAX";
+        m_addTypeTaxBtn.setoutlinecolor(70, 180, 100); // Highlight selected
         m_addProductError.clear();
         m_addNameBox.clear();
         m_addStockBox.clear();
@@ -150,11 +158,16 @@ Application::Application()
     m_addTypeTaxBtn = Button(m_font, "TAX", { 230, 30 }, { 835, 202 });
     m_addTypeTaxBtn.setCallback([this] {
         m_selectedAddType = "TAX";
+		m_addTypeTaxBtn.setoutlinecolor( 70, 180, 100 ); // Highlight selected
+        m_addTypeDiscBtn.setoutlinecolor(120, 120, 140); // Dehighlight selected
         });
 
     m_addTypeDiscBtn = Button(m_font, "DISC", { 230, 30 }, { 835, 236 });
     m_addTypeDiscBtn.setCallback([this] {
         m_selectedAddType = "DISC";
+        m_addTypeDiscBtn.setoutlinecolor(70, 180, 100); // Highlight selected
+        m_addTypeTaxBtn.setoutlinecolor(120, 120, 140); // Dehighlight selected
+
         });
 
     m_addNameBox = TextBox(m_font, { 230, 30 }, { 835, 314 });
@@ -166,15 +179,17 @@ Application::Application()
         submitAddProductForm();
         });
 
-    m_closeOverlayBtn = Button(m_font, "X", { 32, 28 }, { 1060, 128 });
+    m_closeOverlayBtn = Button(m_font, "X", { 28, 30 }, { 1060, 128 });
+    m_closeOverlayBtn.setoutlinecolor(120, 50, 50); // Red highlight
     m_closeOverlayBtn.setCallback([this] {
         m_isAddProductPanelOpen = false;
         m_isRemoveProductPanelOpen = false;
         m_addProductError.clear();
         m_removeProductError.clear();
+	
         });
 
-    m_showRemoveProductBtn = Button(m_font, "Remove Product", { 140, 30 }, { 960, 80 });
+    m_showRemoveProductBtn = Button(m_font, "Remove Product", { 140, 35 }, { 960, 75 });
     m_showRemoveProductBtn.setCallback([this] {
         m_isAddProductPanelOpen = false;
         m_isRemoveProductPanelOpen = true;
@@ -188,7 +203,7 @@ Application::Application()
         submitRemoveProductForm();
         });
 
-	m_restockBtn = Button(m_font, "Restock Low Inventory", { 200, 30 }, { 850, 560 });
+	m_restockBtn = Button(m_font, "Restock Low Inventory", { 200, 35 }, { 850, 560 });
     m_restockBtn.setCallback([this] {
         m_inventory.restockAll(MEDIUM_STOCK_THRESHOLD, RESTOCK_AMOUNT, RESTOCK_THRESHOLD);
         m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
@@ -543,11 +558,6 @@ void Application::render() //Rendering the user interface of the application, in
         m_window.draw(typeLabel);
         m_addTypeTaxBtn.draw(m_window);
         m_addTypeDiscBtn.draw(m_window);
-
-        sf::Text typeState(m_font, "Selected: " + m_selectedAddType, 14);
-        typeState.setPosition({ 835, 270 });
-        typeState.setFillColor({ 200, 220, 255 });
-        m_window.draw(typeState);
 
         sf::Text nameLabel(m_font, "Name", 16);
         nameLabel.setPosition({ 835, 292 });

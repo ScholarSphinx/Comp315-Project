@@ -15,7 +15,7 @@ public:
 	void handleEvent(const sf::Event& event, //Handling events for the button, allowing it to respond to user interactions such as mouse clicks, ensuring that the button can trigger its callback function when the appropriate events occur, enabling interactive behavior for the button in the application
         const sf::RenderWindow& window); 
 	void draw(sf::RenderWindow& window); //Drawing the button on the provided render window, allowing it to be visually represented in the application, ensuring that the button's shape and text are rendered correctly on the screen, enabling users to see and interact with the button in the application
-
+	void setoutlinecolor(int x, int y, int z); //Setting the fill color of the button by assigning the provided optional void to the setfillcolor member variable, allowing for flexibility in whether the button has a fill color or not, enabling the creation of both filled and unfilled buttons in the application, while still providing the ability to set a fill color for the button when needed
 private:
 	sf::RectangleShape m_shape; //Using a RectangleShape to represent the visual appearance of the button, allowing for easy customization of the button's size, color, and position, ensuring that the button can be visually distinct and appropriately styled in the application
 	std::optional<sf::Text> m_text; //Using an optional Text object to represent the label of the button allows for flexibility in whether the button has a label or not, enabling the creation of both labeled and unlabeled buttons in the application, while still providing the ability to display text on the button when needed

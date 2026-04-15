@@ -10,9 +10,8 @@ Button::Button(const sf::Font& font, //Constructor for the Button class, taking 
     m_shape.setFillColor({ 60,60,60 });
     m_shape.setOutlineThickness(1.f);
     m_shape.setOutlineColor({ 120,120,140 });
-
 	m_text.emplace(font, label, 16);  //Emplacing a new sf::Text object into the optional m_text member variable, initializing it with the provided font, label string, and character size of 16, allowing for the button to display a text label using the specified font and size, ensuring that the button's label is properly configured and ready to be drawn on the screen
-    m_text->setPosition(position + sf::Vector2f{ 10.f, 8.f });
+    m_text->setPosition(position + sf::Vector2f{ 8.f, 8.f });
 }
 
 void Button::setCallback(std::function<void()> cb) {
@@ -36,4 +35,10 @@ void Button::handleEvent(const sf::Event& event, //Handling events for the butto
 void Button::draw(sf::RenderWindow& window) { //Drawing the button on the provided render window, allowing it to be visually represented in the application, ensuring that the button's shape and text are rendered correctly on the screen, enabling users to see and interact with the button in the application
     window.draw(m_shape);
     if (m_text) window.draw(*m_text);
+}
+
+
+void Button::setoutlinecolor(int x, int y, int z)
+{
+	m_shape.setOutlineColor({ (uint8_t)(x),(uint8_t)(y),(uint8_t)(z) }); //Setting the outline color of the button by converting the provided integer values for red, green, and blue into sf::Uint8 format and assigning it to the button's shape outline color, allowing for customization of the button's appearance in the application, enabling users to choose different outline colors for the button to enhance its visual appeal and distinguish it from other elements in the user interface
 }
