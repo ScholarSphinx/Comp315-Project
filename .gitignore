@@ -400,3 +400,21 @@ FodyWeavers.xsd
 *.sln.iml
 
 !External/**
+/Comp315 Project/Debug/Comp315 Project.tlog/CL.command.1.tlog
+/Comp315 Project/Debug/Comp315 Project.tlog/Cl.items.tlog
+/Comp315 Project/Debug/Comp315 Project.tlog/CL.read.1.tlog
+/Comp315 Project/Debug/Comp315 Project.tlog/CL.write.1.tlog
+/Comp315 Project/Debug/Comp315 Project.tlog/link.command.1.tlog
+/Comp315 Project/Debug/Comp315 Project.tlog/Comp315 Project.lastbuildstate
+/Comp315 Project/Debug/Comp315 Project.tlog/link.read.1.tlog
+/Comp315 Project/Debug/Comp315 Project.tlog/link.secondary.1.tlog
+/Comp315 Project/Debug/Comp315 Project.tlog/link.write.1.tlog
+/Comp315 Project/Debug/Comp315 Project.exe.recipe
+/Comp315 Project/Debug/Comp315 Project.ilk
+/Assets/inventory_editable.csv
+/Comp315 Project/Debug/Comp315 Project.log
+/Comp315 Project/Debug/main.obj
+/Comp315 Project/Debug/vc143.idb
+/Comp315 Project/Debug/vc143.pdb
+/Debug/Comp315 Project.exe
+/Debug/Comp315 Project.pdb

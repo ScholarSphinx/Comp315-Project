@@ -1,8 +1,0 @@
-﻿  Application.cpp
-C:\Users\calvi\OneDrive\Documents\GitHub\Comp315-Project\Config.h(25,24): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
-  (compiling source file 'GUI/Application.cpp')
-  
-C:\Users\calvi\OneDrive\Documents\GitHub\Comp315-Project\Config.h(26,25): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
-  (compiling source file 'GUI/Application.cpp')
-  
-  Comp315 Project.vcxproj -> C:\Users\calvi\OneDrive\Documents\GitHub\Comp315-Project\Debug\Comp315 Project.exe
