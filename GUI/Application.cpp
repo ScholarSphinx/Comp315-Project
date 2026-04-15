@@ -89,6 +89,34 @@ Application::Application()
         m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyDesc);
         m_isMenuOpen = false;
         });
+
+    m_sortNameAscBtn = Button(m_font, "Name: Asc", { 120, 30 }, { 520, 230 });
+    m_sortNameAscBtn.setCallback([this] {
+        m_currentSort = SortCriteria::NameAsc;
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::NameAsc);
+        m_isMenuOpen = false;
+    });
+
+    m_sortNameDescBtn = Button(m_font, "Name: Desc", { 120, 30 }, { 520, 260 });
+    m_sortNameDescBtn.setCallback([this] {
+        m_currentSort = SortCriteria::NameDesc;
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::NameDesc);
+        m_isMenuOpen = false;
+    });
+
+    m_sortIdAscBtn = Button(m_font, "ID: Asc", { 120, 30 }, { 520, 290 });
+    m_sortIdAscBtn.setCallback([this] {
+        m_currentSort = SortCriteria::IDAsc;
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::IDAsc);
+        m_isMenuOpen = false;
+        });
+
+    m_sortIdDescBtn = Button(m_font, "ID: Desc", { 120, 30 }, { 520, 320 });
+    m_sortIdDescBtn.setCallback([this] {
+        m_currentSort = SortCriteria::IDDesc;
+        m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::IDDesc);
+        m_isMenuOpen = false;
+        });
     // Initial load so the screen isn't blank
     m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyDesc);
 
@@ -224,6 +252,10 @@ void Application::processEvents()
                 m_sortPriceDescBtn.handleEvent(*e, m_window);
                 m_sortQtyAscBtn.handleEvent(*e, m_window);
                 m_sortQtyBtn.handleEvent(*e, m_window);
+				m_sortNameAscBtn.handleEvent(*e, m_window);
+				m_sortNameDescBtn.handleEvent(*e, m_window);
+				m_sortIdAscBtn.handleEvent(*e, m_window);
+				m_sortIdDescBtn.handleEvent(*e, m_window);
             }
         }
     }
@@ -259,7 +291,7 @@ void Application::submitAddProductForm()
 
     const int nextId = ProductFileManager::calculateNextId(INVENTORY_FILE);
     const std::string type = m_selectedAddType;
-    const double rate = (type == "DISC") ? 0.10 : 0.15;
+    const double rate = (type == "DISC") ? DISC_RATE : TAX_RATE;
 
     std::shared_ptr<Product> product;
     if (type == "DISC")
@@ -469,6 +501,10 @@ void Application::render() //Rendering the user interface of the application, in
         m_sortPriceDescBtn.draw(m_window);
         m_sortQtyAscBtn.draw(m_window);
         m_sortQtyBtn.draw(m_window);
+        m_sortNameAscBtn.draw(m_window);
+		m_sortNameDescBtn.draw(m_window);
+		m_sortIdAscBtn.draw(m_window);
+		m_sortIdDescBtn.draw(m_window);
     }
 
     if (m_isAddProductPanelOpen)

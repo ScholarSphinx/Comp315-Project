@@ -21,6 +21,9 @@ constexpr int MEDIUM_STOCK_THRESHOLD = 20;
 constexpr int NO_STOCK_THRESHOLD = 0;
 constexpr int LOW_STOCK_THRESHOLD = 10;
 
+// Set Values
+constexpr int TAX_RATE = 0.15; //Tax rate applied to products, allowing for the calculation of the final price of products by adding a specified percentage to the base price, ensuring that we can account for taxes in the pricing strategy and provide accurate pricing information to users when they view product details or process orders, enhancing the realism and functionality of the inventory management system by incorporating tax calculations into the product pricing logic.
+constexpr int DISC_RATE = 0.10; //Discount rate applied to products, allowing for the calculation of the final price of products by subtracting a specified percentage from the base price, ensuring that we can offer discounts on products and provide accurate pricing information to users when they view product details or process orders, enhancing the realism and functionality of the inventory management system by incorporating discount calculations into the product pricing logic, providing flexibility in how we manage pricing and promotions for products in the inventory.
 
 // CSV Path
 constexpr const char* INVENTORY_FILE = "Assets/inventory.csv"; //Used as a base

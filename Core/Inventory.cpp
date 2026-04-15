@@ -171,6 +171,14 @@ std::vector<std::shared_ptr<Product>> Inventory::getSortedProducts(SortCriteria 
             return a->getQuantity() < b->getQuantity();
         case SortCriteria::QtyDesc:
             return a->getQuantity() > b->getQuantity();
+		case SortCriteria::NameAsc:
+			return a->getName() < b->getName();
+		case SortCriteria::NameDesc:
+			return a->getName() > b->getName();
+		case SortCriteria::IDAsc:
+			return a->getId() < b->getId();
+		case SortCriteria::IDDesc:
+			return a->getId() > b->getId();
         default:
             return false;
         }

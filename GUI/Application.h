@@ -53,6 +53,10 @@ private:
 	Button m_sortQtyBtn;
 	Button m_sortPriceBtn;
 	Button m_sortQtyAscBtn;
+	Button m_sortNameAscBtn;
+	Button m_sortNameDescBtn;
+	Button m_sortIdAscBtn;
+	Button m_sortIdDescBtn;
 	Button m_showAddProductBtn;
 	Button m_submitAddProductBtn;
 	Button m_closeOverlayBtn;

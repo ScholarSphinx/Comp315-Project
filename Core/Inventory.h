@@ -8,6 +8,12 @@
 #include "Order.h"
 
 enum class SortCriteria {
+    IDAsc,
+	IDDesc,
+	NameAsc,
+	NameDesc,
+    Tax,
+    Disc,
     PriceAsc,
     PriceDesc,
     QtyAsc,
