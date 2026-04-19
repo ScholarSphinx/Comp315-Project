@@ -16,7 +16,7 @@
 #include <mutex>
 
 Application::Application()
-	: m_window(sf::VideoMode({ 1150u,600u }), "Inventory System") //Creating the main application window with a specified size and title, allowing us to display the user interface and interact with the inventory system, ensuring that we have a dedicated space for rendering the GUI components and providing a visually appealing interface for users to engage with the application
+	: m_window(sf::VideoMode({ 1150u,700u }), "Inventory System") //Creating the main application window with a specified size and title, allowing us to display the user interface and interact with the inventory system, ensuring that we have a dedicated space for rendering the GUI components and providing a visually appealing interface for users to engage with the application
 {
     m_window.setFramerateLimit(60);
 
@@ -222,7 +222,7 @@ Application::Application()
         m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
 		});
 
-	m_orderHistoryBtn = Button(m_font, "Order History", { 140, 35 }, { 880, 30 });
+	m_orderHistoryBtn = Button(m_font, "Order History", { 140, 35 }, { 880, 610 });
     m_orderHistoryBtn.setCallback([this] {
         m_isOrderHistoryOpen = true;
         m_isAddProductPanelOpen = false;
@@ -442,7 +442,7 @@ void Application::render() //Rendering the user interface of the application, in
         if (!searchLower.empty() && nameLower.find(searchLower) == std::string::npos)// Checking if the search query is not empty and if the product's name does not contain the search query, allowing us to filter out products that do not match the user's search input. If a product does not match the search criteria, we skip rendering it in the user interface, ensuring that users only see products that are relevant to their search query, providing a more focused and efficient way for users to find specific products in the inventory.
             continue;
 
-		sf::RectangleShape card({ 220,70 }); //Creating a rectangle shape to represent a product card or a bar in the user interface, allowing us to visually display information about each product in a structured and organized manner. The card will contain the product's name and stock quantity, providing users with a clear and concise representation of the products available in the inventory, enabling them to easily monitor stock levels and identify specific products based on their search queries.
+		sf::RectangleShape card({ 220,70 }); //Creating a rectangle shape to represent a product card or a bar in the user interface, allowing us to visually display information about each product in a structured and organized manner. The card will contain the product's name, stock quantity, and ID, providing users with a clear and concise representation of the products available in the inventory, enabling them to easily monitor stock levels and identify specific products based on their search queries.
         card.setPosition({ x + col * 240.f, y });
         card.setFillColor({ 36,38,45 });
         card.setOutlineThickness(2);
@@ -450,7 +450,7 @@ void Application::render() //Rendering the user interface of the application, in
         m_window.draw(card);
 
 
-        sf::RectangleShape stockIndicator({ 15,64 });
+        sf::RectangleShape stockIndicator({ 15,65 });
         stockIndicator.setPosition({ x+203 + col * 240.f, y+3 });
         stockIndicator.setFillColor({ 36,38,45 });
         stockIndicator.setOutlineThickness(1);
@@ -469,12 +469,12 @@ void Application::render() //Rendering the user interface of the application, in
         m_window.draw(stockIndicator);
 
         sf::Text t(m_font,
-			p->getName() + "\nStock: " + std::to_string(p->getQuantity()), 16); //Creating a text object to display the product's name and stock quantity, allowing us to provide detailed information about each product in the user interface. This text will be rendered on top of the product card, giving users a clear and concise representation of the product's details, enabling them to easily monitor stock levels and identify specific products based on their search queries, providing a more informative and engaging user experience when interacting with the inventory system.
-        t.setPosition({ x + 10 + col * 240.f, y + 10 });
+			p->getName() + "\nStock: " + std::to_string(p->getQuantity()) + "\nID: " + std::to_string(p->getId()), 14); //Creating a text object to display the product's name, stock quantity, and ID, allowing us to provide detailed information about each product in the user interface. This text will be rendered on top of the product card, giving users a clear and concise representation of the product's details, enabling them to easily monitor stock levels and identify specific products based on their search queries, providing a more informative and engaging user experience when interacting with the inventory system.
+        t.setPosition({ x + 10 + col * 240.f, y + 8 });
         m_window.draw(t);
 
         col++;
-        if (col == 3) { col = 0; y += 90; }
+        if (col == 3) { col = 0; y += 95; }
     }
 
 	sf::RectangleShape statBack({ 300,430 }); //Creating a rectangle shape to serve as the background for the statistics section of the user interface, allowing us to visually separate and highlight the area where order processing metrics will be displayed. This background provides a clear and organized space for presenting important information about the orders, such as total orders, successful orders, failed orders, and thread count, enabling users to easily monitor the performance of the order processing system and understand the current state of the inventory and order processing metrics at a glance.
@@ -652,7 +652,7 @@ void Application::render() //Rendering the user interface of the application, in
         // Display order history
         std::lock_guard<std::mutex> lock(m_historyMutex);
         float y = 180;
-        int maxOrders = 12; // Maximum orders to display
+        int maxOrders = 15; // Maximum orders to display
         
         for (size_t i = 0; i < m_orderHistory.size() && i < maxOrders; ++i) {
             sf::Text orderText(m_font, m_orderHistory[i].text, 12);
