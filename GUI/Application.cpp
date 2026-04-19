@@ -4,7 +4,6 @@
 #include "../Core/DiscountedProduct.h"
 #include "../Core/TaxableProduct.h"
 #include "../IO/ProductManager.h"
-
 #include <SFML/Graphics.hpp>
 #include <optional>
 #include <thread>
@@ -14,6 +13,7 @@
 #include <cctype>
 #include <SFML/System.hpp>
 #include <stdexcept>
+#include <mutex>
 
 Application::Application()
 	: m_window(sf::VideoMode({ 1150u,600u }), "Inventory System") //Creating the main application window with a specified size and title, allowing us to display the user interface and interact with the inventory system, ensuring that we have a dedicated space for rendering the GUI components and providing a visually appealing interface for users to engage with the application
@@ -42,6 +42,16 @@ Application::Application()
         m_errorMessage = error;
 
 	m_processor = std::make_unique<OrderProcessor>(m_inventory); //Creating an instance of the OrderProcessor class, passing a reference to the inventory, allowing the order processor to access and interact with the inventory data for processing orders, ensuring that the order processing logic can manage stock levels and calculate revenues based on the products available in the inventory
+
+	// Set up callback to capture order history
+	m_processor->onOrderProcessed = [this](const std::string& orderText) {
+		std::lock_guard<std::mutex> lock(m_historyMutex);
+		m_orderHistory.push_front({ orderText });
+		// Keep only the last 50 orders
+		if (m_orderHistory.size() > 50) {
+			m_orderHistory.pop_back();
+		}
+	};
 
 	m_simulateBtn = Button(m_font, "Run Simulation", { 150,40 }, { 40,30 }); //Initializing the "Run Simulation" button with a specified font, label, size, and position, allowing users to interact with the button to trigger the simulation of order processing, ensuring that we have a clear and interactive element in the interface for users to initiate the order processing simulation and view the resulting metrics
 	m_simulateBtn.setCallback([this] { //Setting a callback function for the "Run Simulation" button, allowing users to define custom behavior that will be executed when the button is clicked. In this case, we start a new thread to run the order processing simulation, allowing the simulation to run concurrently without blocking the main thread of the application, ensuring that the user interface remains responsive while the simulation is running and allowing users to interact with other elements of the interface during the simulation process.
@@ -147,6 +157,7 @@ Application::Application()
     m_showAddProductBtn.setCallback([this] {
         m_isRemoveProductPanelOpen = false;
         m_isAddProductPanelOpen = true;
+        m_isOrderHistoryOpen = false;
         m_selectedAddType = "TAX";
         m_addTypeTaxBtn.setoutlinecolor(70, 180, 100); // Highlight selected
         m_addProductError.clear();
@@ -184,15 +195,17 @@ Application::Application()
     m_closeOverlayBtn.setCallback([this] {
         m_isAddProductPanelOpen = false;
         m_isRemoveProductPanelOpen = false;
+		m_isOrderHistoryOpen = false;
         m_addProductError.clear();
         m_removeProductError.clear();
-	
+	    
         });
 
     m_showRemoveProductBtn = Button(m_font, "Remove Product", { 140, 35 }, { 960, 75 });
     m_showRemoveProductBtn.setCallback([this] {
         m_isAddProductPanelOpen = false;
         m_isRemoveProductPanelOpen = true;
+        m_isOrderHistoryOpen = false;
         m_removeProductError.clear();
         m_removeIdBox.clear();
         });
@@ -207,6 +220,13 @@ Application::Application()
     m_restockBtn.setCallback([this] {
         m_inventory.restockAll(MEDIUM_STOCK_THRESHOLD, RESTOCK_AMOUNT, RESTOCK_THRESHOLD);
         m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
+		});
+
+	m_orderHistoryBtn = Button(m_font, "Order History", { 140, 35 }, { 880, 30 });
+    m_orderHistoryBtn.setCallback([this] {
+        m_isOrderHistoryOpen = true;
+        m_isAddProductPanelOpen = false;
+        m_isRemoveProductPanelOpen = false;
 		});
 
 }
@@ -260,6 +280,8 @@ void Application::processEvents()
         m_showAddProductBtn.handleEvent(*e, m_window);
         m_showRemoveProductBtn.handleEvent(*e, m_window);
 		m_restockBtn.handleEvent(*e, m_window);
+		m_orderHistoryBtn.handleEvent(*e, m_window);
+
         if (m_isAddProductPanelOpen)
         {
             m_submitAddProductBtn.handleEvent(*e, m_window);
@@ -268,7 +290,7 @@ void Application::processEvents()
         {
             m_submitRemoveProductBtn.handleEvent(*e, m_window);
         }
-        if (m_isAddProductPanelOpen || m_isRemoveProductPanelOpen)
+        if (m_isAddProductPanelOpen || m_isRemoveProductPanelOpen || m_isOrderHistoryOpen)
         {
             m_closeOverlayBtn.handleEvent(*e, m_window);
         }
@@ -465,7 +487,7 @@ void Application::render() //Rendering the user interface of the application, in
 	auto& metrics = m_processor->getMetrics(); //Retrieving the metrics from the order processor, allowing us to access the data related to the total number of orders processed, successful orders, failed orders, and thread count. This information is crucial for rendering the statistics section of the user interface, where we will display these metrics in a clear and organized manner. By accessing the metrics, we can provide users with insights into the performance of the order processing system, helping them to understand how well the system is functioning and identify any potential issues or areas for improvement based on the displayed metrics.
 
     float xStat = 807;
-    float yStat = 120;
+    float yStat = 125;
     int colStat = 0;
 
     for (int i = 0; i < 4; i++) {
@@ -494,22 +516,22 @@ void Application::render() //Rendering the user interface of the application, in
 
     sf::Text orderstat1(m_font,
 		"Orders: " + std::to_string(metrics.total.load()), 18); //Creating a text object to display the total number of orders processed, allowing us to provide users with information about the overall activity of the order processing system. This text will be rendered in the statistics section of the user interface, giving users a clear and concise representation of the total orders, enabling them to monitor the performance of the system and understand how many orders have been processed at a glance, providing valuable insights into the workload and efficiency of the order processing system.
-   orderstat1.setPosition({ 825,130 });   
+   orderstat1.setPosition({ 825,135 });   
     m_window.draw(orderstat1);
 
     sf::Text successstat2(m_font,
 		"\nSuccess: " + std::to_string(metrics.success.load()), 18); //Creating a text object to display the number of successful orders processed, allowing us to provide users with information about the effectiveness of the order processing system. This text will be rendered in the statistics section of the user interface, giving users a clear and concise representation of the successful orders, enabling them to monitor the performance of the system and understand how many orders have been successfully processed at a glance, providing valuable insights into the success rate and efficiency of the order processing system.
-   successstat2.setPosition({ 975,110 });    
+   successstat2.setPosition({ 975,115 });    
     m_window.draw(successstat2);
 
     sf::Text failedstat3(m_font,
 		"\nFailed: " + std::to_string(metrics.failed.load()), 18); //Creating a text object to display the number of failed orders processed, allowing us to provide users with information about the challenges or issues faced by the order processing system. This text will be rendered in the statistics section of the user interface, giving users a clear and concise representation of the failed orders, enabling them to monitor the performance of the system and understand how many orders have encountered problems at a glance, providing valuable insights into potential areas for improvement in the order processing system.
-    failedstat3.setPosition({ 975,165 });   
+    failedstat3.setPosition({ 975,170 });   
     m_window.draw(failedstat3);
 
     sf::Text threadstat4(m_font,
 		"\nThreads: " + std::to_string(THREAD_COUNT), 18); //Creating a text object to display the number of threads used in the order processing simulation, allowing us to provide users with information about the level of concurrency and parallelism in the system. This text will be rendered in the statistics section of the user interface, giving users a clear and concise representation of the thread count, enabling them to understand how many threads are being utilized for processing orders at a glance, providing valuable insights into the performance and efficiency of the order processing system based on its use of multithreading.
-    threadstat4.setPosition({ 825,165 });   
+    threadstat4.setPosition({ 825,170 });   
     m_window.draw(threadstat4);
 
     float total = (float)metrics.total.load();
@@ -526,6 +548,7 @@ void Application::render() //Rendering the user interface of the application, in
     m_showRemoveProductBtn.draw(m_window);
     m_filterMenuBtn.draw(m_window);
 	m_restockBtn.draw(m_window);
+	m_orderHistoryBtn.draw(m_window);
 
     if (m_isMenuOpen) {
         m_sortPriceBtn.draw(m_window);
@@ -612,6 +635,47 @@ void Application::render() //Rendering the user interface of the application, in
         }
 
         m_submitRemoveProductBtn.draw(m_window);
+        m_closeOverlayBtn.draw(m_window);
+    }
+    if (m_isOrderHistoryOpen) {
+        sf::RectangleShape orderPanel({ 300,430 });
+        orderPanel.setPosition({ 800,120 });
+        orderPanel.setFillColor({ 28,30,38 });
+        orderPanel.setOutlineThickness(2);
+        orderPanel.setOutlineColor({ 90,90,110 });
+        m_window.draw(orderPanel);
+
+        sf::Text panelTitle(m_font, "Order History", 20);
+        panelTitle.setPosition({ 870, 145 });
+        m_window.draw(panelTitle);
+
+        // Display order history
+        std::lock_guard<std::mutex> lock(m_historyMutex);
+        float y = 180;
+        int maxOrders = 12; // Maximum orders to display
+        
+        for (size_t i = 0; i < m_orderHistory.size() && i < maxOrders; ++i) {
+            sf::Text orderText(m_font, m_orderHistory[i].text, 12);
+            orderText.setPosition({ 815, y });
+            
+            // Color code based on success/failure
+            if (m_orderHistory[i].text.find("SUCCESS") != std::string::npos) {
+                orderText.setFillColor({ 100, 200, 100 }); // Green for success
+            } else {
+                orderText.setFillColor({ 200, 100, 100 }); // Red for failure
+            }
+            
+            m_window.draw(orderText);
+            y += 25;
+        }
+
+        if (m_orderHistory.empty()) {
+            sf::Text noOrdersText(m_font, "No orders yet", 14);
+            noOrdersText.setPosition({ 870, 250 });
+            noOrdersText.setFillColor({ 150, 150, 150 });
+            m_window.draw(noOrdersText);
+        }
+
         m_closeOverlayBtn.draw(m_window);
     }
     m_window.display();

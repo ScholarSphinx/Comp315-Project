@@ -73,9 +73,11 @@ private:
 	Button m_showRemoveProductBtn;
 	Button m_submitRemoveProductBtn;
 	bool m_isRemoveProductPanelOpen = false;
+	bool m_isOrderHistoryOpen = false;
 	TextBox m_removeIdBox;
 	Button m_restockBtn;
 	std::string m_removeProductError;
+	Button m_orderHistoryBtn;
 
 	// Optional: A background for the dropdown to make it look like a real menu
 	sf::RectangleShape m_menuBackground;

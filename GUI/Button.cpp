@@ -11,7 +11,7 @@ Button::Button(const sf::Font& font, //Constructor for the Button class, taking 
     m_shape.setOutlineThickness(1.f);
     m_shape.setOutlineColor({ 120,120,140 });
 	m_text.emplace(font, label, 16);  //Emplacing a new sf::Text object into the optional m_text member variable, initializing it with the provided font, label string, and character size of 16, allowing for the button to display a text label using the specified font and size, ensuring that the button's label is properly configured and ready to be drawn on the screen
-    m_text->setPosition(position + sf::Vector2f{ 8.f, 8.f });
+    m_text->setPosition(position + sf::Vector2f{ 8.f, 7.f });
 }
 
 void Button::setCallback(std::function<void()> cb) {
