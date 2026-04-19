@@ -14,6 +14,7 @@
 #include <SFML/System.hpp>
 #include <stdexcept>
 #include <mutex>
+#include <sstream>
 
 Application::Application()
 	: m_window(sf::VideoMode({ 1150u,700u }), "Inventory System") //Creating the main application window with a specified size and title, allowing us to display the user interface and interact with the inventory system, ensuring that we have a dedicated space for rendering the GUI components and providing a visually appealing interface for users to engage with the application
@@ -395,7 +396,7 @@ void Application::submitRemoveProductForm()
     m_isRemoveProductPanelOpen = false;
 }
 
-std::string toLower(std::string data) {
+static std::string toLower(std::string data) {
     std::transform(data.begin(), data.end(), data.begin(),
         [](unsigned char c) { return std::tolower(c); });
     return data;
@@ -468,9 +469,14 @@ void Application::render() //Rendering the user interface of the application, in
 			stockIndicator.setFillColor({ 50,200,50 }); // Setting the fill color of the stock indicator to green when the stock count is greater than 20, indicating that the product is well-stocked. This visual cue allows users to quickly identify products that have a healthy amount of stock available, providing an immediate understanding of the inventory status and helping users to feel confident about ordering or relying on those products without concern for running out of stock in the near future.
         m_window.draw(stockIndicator);
 
+        double prodPrice = p->getPrice();
+        std::stringstream priceStream;
+        priceStream << std::fixed << std::setprecision(2) << prodPrice;
+        std::string displayPrice = priceStream.str();
+
         sf::Text t(m_font,
-			p->getName() + "\nStock: " + std::to_string(p->getQuantity()) + "\nID: " + std::to_string(p->getId()), 14); //Creating a text object to display the product's name, stock quantity, and ID, allowing us to provide detailed information about each product in the user interface. This text will be rendered on top of the product card, giving users a clear and concise representation of the product's details, enabling them to easily monitor stock levels and identify specific products based on their search queries, providing a more informative and engaging user experience when interacting with the inventory system.
-        t.setPosition({ x + 10 + col * 240.f, y + 8 });
+            p->getName() + "\nStock: " + std::to_string(p->getQuantity()) + "\nID: " + std::to_string(p->getId()) + "\nPrice: R" + displayPrice, 14); //Creating a text object to display the product's name, stock quantity, and ID, allowing us to provide detailed information about each product in the user interface. This text will be rendered on top of the product card, giving users a clear and concise representation of the product's details, enabling them to easily monitor stock levels and identify specific products based on their search queries, providing a more informative and engaging user experience when interacting with the inventory system.
+        t.setPosition({ x + 10 + col * 240.f, y + 4 });
         m_window.draw(t);
 
         col++;

@@ -25,6 +25,7 @@ std::string Product::getName() const
 
 double Product::getPrice() const
 {
+
     return m_price;
 }
 
