@@ -25,6 +25,14 @@ constexpr int LOW_STOCK_THRESHOLD = 10;
 constexpr int TAX_RATE = 0.15; //Tax rate applied to products, allowing for the calculation of the final price of products by adding a specified percentage to the base price, ensuring that we can account for taxes in the pricing strategy and provide accurate pricing information to users when they view product details or process orders, enhancing the realism and functionality of the inventory management system by incorporating tax calculations into the product pricing logic.
 constexpr int DISC_RATE = 0.10; //Discount rate applied to products, allowing for the calculation of the final price of products by subtracting a specified percentage from the base price, ensuring that we can offer discounts on products and provide accurate pricing information to users when they view product details or process orders, enhancing the realism and functionality of the inventory management system by incorporating discount calculations into the product pricing logic, providing flexibility in how we manage pricing and promotions for products in the inventory.
 
+// --- Thread Display Mode ---
+enum class ThreadDisplayMode
+{
+    Raw,    // Show actual std::thread::id
+    Mapped  // Show T1, T2, T3...
+};
+constexpr ThreadDisplayMode THREAD_DISPLAY_MODE = ThreadDisplayMode::Mapped;
+
 // CSV Path
 constexpr const char* INVENTORY_FILE = "Assets/inventory.csv"; //Used as a base
 constexpr const char* EDITED_INVENTORY_FILE = "Assets/inventory_editable.csv"; // Used for saving changes to the inventory, such as deactivating products or restocking, allowing us to maintain a persistent record of the inventory state and ensure that changes made during the application's operation are saved and can be loaded in future sessions, providing a way to manage and update the inventory data effectively while ensuring data integrity and consistency across application runs.

@@ -47,6 +47,7 @@ void OrderProcessor::simulate()
     //Worker Lambda
     auto worker = [this, activeProducts, ordersPerThread]()
         {
+            std::thread::id threadId = std::this_thread::get_id();
             std::random_device rd;
             std::mt19937 gen(rd());
 
@@ -93,7 +94,8 @@ void OrderProcessor::simulate()
                     orderId,
                     product->getName(),
                     quantity,
-                    success
+                    success,
+                    threadId
                 );
 
                 //SEND TO UI (Order History)
