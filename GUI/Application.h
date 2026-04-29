@@ -11,11 +11,11 @@
 class Application
 {
 
-struct OrderRecord
-{
-	std::string text;
-	std::thread::id threadId;
-};
+	struct OrderRecord
+	{
+		std::string text;
+		std::thread::id threadId;
+	};
 
 	std::deque<OrderRecord> m_orderHistory;
 	std::mutex m_historyMutex;
@@ -80,6 +80,11 @@ private:
 	Button m_restockBtn;
 	std::string m_removeProductError;
 	Button m_orderHistoryBtn;
+
+	// Product scrolling variables
+	int m_scrollOffset = 0;
+	static const int VISIBLE_PRODUCTS = 18;
+	static const int SCROLL_STEP = 3;
 
 	// Optional: A background for the dropdown to make it look like a real menu
 	sf::RectangleShape m_menuBackground;
