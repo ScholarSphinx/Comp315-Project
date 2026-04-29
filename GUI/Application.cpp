@@ -45,9 +45,9 @@ Application::Application()
 	m_processor = std::make_unique<OrderProcessor>(m_inventory); //Creating an instance of the OrderProcessor class, passing a reference to the inventory, allowing the order processor to access and interact with the inventory data for processing orders, ensuring that the order processing logic can manage stock levels and calculate revenues based on the products available in the inventory
 
 	// Set up callback to capture order history
-	m_processor->onOrderProcessed = [this](const std::string& orderText) {
+	m_processor->onOrderProcessed = [this](const std::string& orderText, std::thread::id threadId) {
 		std::lock_guard<std::mutex> lock(m_historyMutex);
-		m_orderHistory.push_front({ orderText });
+		m_orderHistory.push_front({ orderText, threadId });
 		// Keep only the last 50 orders
 		if (m_orderHistory.size() > 50) {
 			m_orderHistory.pop_back();
@@ -644,7 +644,7 @@ void Application::render() //Rendering the user interface of the application, in
         m_closeOverlayBtn.draw(m_window);
     }
     if (m_isOrderHistoryOpen) {
-        sf::RectangleShape orderPanel({ 300,430 });
+        sf::RectangleShape orderPanel({ 320,430 });
         orderPanel.setPosition({ 800,120 });
         orderPanel.setFillColor({ 28,30,38 });
         orderPanel.setOutlineThickness(2);
@@ -652,17 +652,25 @@ void Application::render() //Rendering the user interface of the application, in
         m_window.draw(orderPanel);
 
         sf::Text panelTitle(m_font, "Order History", 20);
-        panelTitle.setPosition({ 870, 145 });
+        panelTitle.setPosition({ 860, 130 });
         m_window.draw(panelTitle);
 
         // Display order history
         std::lock_guard<std::mutex> lock(m_historyMutex);
         float y = 180;
-        int maxOrders = 15; // Maximum orders to display
+        int maxOrders = 18; // Maximum orders to display
         
         for (size_t i = 0; i < m_orderHistory.size() && i < maxOrders; ++i) {
-            sf::Text orderText(m_font, m_orderHistory[i].text, 12);
-            orderText.setPosition({ 815, y });
+            // Convert thread ID to string for display
+            std::ostringstream threadIdStream;
+            threadIdStream << m_orderHistory[i].threadId;
+            std::string threadIdStr = threadIdStream.str();
+            
+            // Create order text with thread ID
+            std::string fullOrderText = m_orderHistory[i].text + " | Thread: " + threadIdStr;
+            
+            sf::Text orderText(m_font, fullOrderText, 11); // Slightly smaller font to fit thread ID
+            orderText.setPosition({ 818, y-17 });
             
             // Color code based on success/failure
             if (m_orderHistory[i].text.find("SUCCESS") != std::string::npos) {
@@ -672,7 +680,7 @@ void Application::render() //Rendering the user interface of the application, in
             }
             
             m_window.draw(orderText);
-            y += 25;
+            y += 22; // Slightly reduce spacing to fit more orders
         }
 
         if (m_orderHistory.empty()) {

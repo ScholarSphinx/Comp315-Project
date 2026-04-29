@@ -6,6 +6,7 @@
 #include "../GUI/PieChart.h"
 #include "../GUI/TextBox.h"
 #include <deque>
+#include <thread>
 
 class Application
 {
@@ -13,6 +14,7 @@ class Application
 struct OrderRecord
 {
 	std::string text;
+	std::thread::id threadId;
 };
 
 	std::deque<OrderRecord> m_orderHistory;
