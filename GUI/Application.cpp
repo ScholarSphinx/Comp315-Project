@@ -17,7 +17,7 @@
 #include <sstream>
 
 Application::Application()
-    : m_window(sf::VideoMode({ 1150u,700u }), "Inventory System") //Creating the main application window with a specified size and title, allowing us to display the user interface and interact with the inventory system, ensuring that we have a dedicated space for rendering the GUI components and providing a visually appealing interface for users to engage with the application
+    : m_window(sf::VideoMode({ 1150u,700u }), "Inventory System"), m_currentSort(SortCriteria::IDAsc) //Creating the main application window with a specified size and title, allowing us to display the user interface and interact with the inventory system, ensuring that we have a dedicated space for rendering the GUI components and providing a visually appealing interface for users to engage with the application
 {
     m_window.setFramerateLimit(60);
 
@@ -150,8 +150,6 @@ Application::Application()
         });
 
     // Initial load so the screen isn't blank
-    m_viewedProducts = m_inventory.getSortedProducts(SortCriteria::QtyDesc);
-
     m_viewedProducts = m_inventory.getSortedProducts(m_currentSort);
 
     m_showAddProductBtn = Button(m_font, "Add Product", { 140, 35 }, { 800, 75 });
