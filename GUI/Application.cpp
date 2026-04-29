@@ -720,9 +720,7 @@ void Application::render() //Rendering the user interface of the application, in
 
         for (size_t i = 0; i < m_orderHistory.size() && i < maxOrders; ++i) {
             // Convert thread ID to string for display
-            std::ostringstream threadIdStream;
-            threadIdStream << m_orderHistory[i].threadId;
-            std::string threadIdStr = threadIdStream.str();
+            std::string threadIdStr = Logger::getThreadLabel(m_orderHistory[i].threadId);
 
             // Create order text with thread ID
             std::string fullOrderText = m_orderHistory[i].text + " | Thread: " + threadIdStr;

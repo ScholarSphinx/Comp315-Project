@@ -1,52 +1,8 @@
-﻿  Button.cpp
-  Config.cpp
-C:\Users\Siddhar\Source\Repos\Comp315-Project\Config.h(25,24): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
-  (compiling source file 'Config.cpp')
-  
-C:\Users\Siddhar\Source\Repos\Comp315-Project\Config.h(26,25): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
-  (compiling source file 'Config.cpp')
-  
-  Application.cpp
-C:\Users\Siddhar\Source\Repos\Comp315-Project\Config.h(25,24): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
-  (compiling source file 'GUI/Application.cpp')
-  
-C:\Users\Siddhar\Source\Repos\Comp315-Project\Config.h(26,25): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
-  (compiling source file 'GUI/Application.cpp')
-  
-C:\Users\Siddhar\Source\Repos\Comp315-Project\GUI\Application.cpp(721,59): warning C4018: '<': signed/unsigned mismatch
-  DiscountedProduct.cpp
-  Inventory.cpp
-C:\Users\Siddhar\Source\Repos\Comp315-Project\Config.h(25,24): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
-  (compiling source file 'Core/Inventory.cpp')
-  
-C:\Users\Siddhar\Source\Repos\Comp315-Project\Config.h(26,25): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
-  (compiling source file 'Core/Inventory.cpp')
-  
-C:\Users\Siddhar\Source\Repos\Comp315-Project\Core\Inventory.cpp(135,42): warning C4101: 'e': unreferenced local variable
-  TextBox.cpp
-  CSVLoader.cpp
-  Logger.cpp
-C:\Users\Siddhar\Source\Repos\Comp315-Project\Config.h(25,24): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
+﻿  Logger.cpp
+C:\Users\calvi\OneDrive\Documents\GitHub\Comp315-Project\Config.h(25,24): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
   (compiling source file 'IO/Logger.cpp')
   
-C:\Users\Siddhar\Source\Repos\Comp315-Project\Config.h(26,25): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
+C:\Users\calvi\OneDrive\Documents\GitHub\Comp315-Project\Config.h(26,25): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
   (compiling source file 'IO/Logger.cpp')
   
-  main.cpp
-  Product.cpp
-  TaxableProduct.cpp
-  Order.cpp
-  OrderProcessor.cpp
-C:\Users\Siddhar\Source\Repos\Comp315-Project\Config.h(25,24): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
-  (compiling source file 'Concurrency/OrderProcessor.cpp')
-  
-C:\Users\Siddhar\Source\Repos\Comp315-Project\Config.h(26,25): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
-  (compiling source file 'Concurrency/OrderProcessor.cpp')
-  
-  PieChart.cpp
-  Repository.cpp
-  ThreadPool.cpp
-  ProductManager.cpp
-  RandomGenerator.cpp
-  Generating Code...
-  Comp315 Project.vcxproj -> C:\Users\Siddhar\Source\Repos\Comp315-Project\Debug\Comp315 Project.exe
+  Comp315 Project.vcxproj -> C:\Users\calvi\OneDrive\Documents\GitHub\Comp315-Project\Debug\Comp315 Project.exe

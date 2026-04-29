@@ -1,5 +1,6 @@
 #include "Logger.h"
 #include <fstream>
+#include <sstream>
 #include <mutex>
 #include <thread> 
 #include <unordered_map>
@@ -28,20 +29,7 @@ void Logger::logOrder(int orderNumber,
         << " | Result: " << (success ? "SUCCESS" : "FAILED");
 
     
-    if (THREAD_DISPLAY_MODE == ThreadDisplayMode::Raw)
-    {
-        file << " | Thread: " << threadId;
-    }
-    else if (THREAD_DISPLAY_MODE == ThreadDisplayMode::Mapped)
-    {
-        if (threadMap.find(threadId) == threadMap.end())
-        {
-            threadMap[threadId] = threadCounter++;
-        }
-
-        int threadLabel = threadMap[threadId];
-        file << " | Thread: T" << threadLabel;
-    }
+    file << " | Thread: " << Logger::getThreadLabel(threadId);
 
     file << "\n";
 }
@@ -55,4 +43,22 @@ void Logger::logError(const std::string& message)
     file << "[ERROR]: " << message << "\n";
 
    
+}
+std::string Logger::getThreadLabel(std::thread::id threadId)
+{
+    if (THREAD_DISPLAY_MODE == ThreadDisplayMode::Raw)
+    {
+        std::ostringstream oss;
+        oss << threadId;
+        return oss.str();
+    }
+    else // Mapped
+    {
+        if (threadMap.find(threadId) == threadMap.end())
+        {
+            threadMap[threadId] = threadCounter++;
+        }
+
+        return "T" + std::to_string(threadMap[threadId]);
+    }
 }
