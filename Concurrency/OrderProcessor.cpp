@@ -108,7 +108,8 @@ void OrderProcessor::simulate()
                         " | Qty: " + std::to_string(quantity) +
                         " | " + (success ? "SUCCESS" : "FAILED");
 
-                    onOrderProcessed(logText);
+                    std::thread::id currentThreadId = std::this_thread::get_id();
+                    onOrderProcessed(logText, currentThreadId);
                 }
             }
         };
