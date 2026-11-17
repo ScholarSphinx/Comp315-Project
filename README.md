@@ -57,7 +57,7 @@ Without this, two orders for the last 1 item could both succeed — leaving stoc
 - Expected result: 3 orders succeed, 2 fail, final stock = 1
 - Without mutexes: All 5 could succeed, final stock = -5 (wrong)
 
-## 🛠️ Tech Used
+## Tech Used
 
 - **Language:** C++
 - **GUI:** SFML
