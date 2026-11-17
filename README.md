@@ -3,7 +3,7 @@
 A multi-threaded C++ application that simulates a warehouse environment where multiple customer orders and inventory operations run at the same time without corrupting stock data.
 Built to demonstrate how concurrent programming works in a real business scenario, where several users updating the same inventory at once would normally cause errors.
 
-**Duration:** Feb 2026 — May 2026  
+**Duration:** Feb 2026 - May 2026  
 **Tech Stack:** C++ | SFML
 
 ## Problem It Solves
